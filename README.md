@@ -30,7 +30,11 @@ fonts in `fonts/`).
 ## Pages (all in the one single-page site)
 
 - **Shop** — `index.html` (default view): header with Studio TROV logo,
-  Email us + Cart, Welcome hero, trade strip, Collections 1–3.
+  Home + Cart, Welcome hero ("Welcome to Studio TROV's open
+  collections. Please place your order."), trade strip,
+  Collections 1–3. The hero heading reads "Architectural art
+  for calm spaces." Clients reach this site after seeing the
+  look book, so there is no long introduction and no banner.
   On mobile each collection is a horizontal scroll row (as sketched);
   tablet shows a 2-column grid, desktop a 3-column grid.
 - **Collection pages (3)** — from "View Collection →" under each
@@ -38,10 +42,12 @@ fonts in `fonts/`).
   "Collection pages" → 01 Modernist Form / 02 Archival Herbarium /
   03 Abstract Earth. Each has a hero image, collection intro,
   all 5 works in a grid, and Add to Cart.
-- **Piece pages (15)** — click any product image or title, on the
-  shop or on a collection page. Each has the large flat artwork
-  + framed mockup, SKU, title, collection, description, paper/spec,
-  size selector, quantity, Add to Cart, and 4 related works.
+- **Product popup** — there are no individual product pages.
+  Click any product image or title, on the shop or on a collection
+  page, and it pops up full-screen with the full artwork image,
+  the framed mockup, SKU, title, collection, description,
+  paper/spec, size selector, quantity and Add to Cart. Closes
+  with the close button, tapping the backdrop, or Escape.
   Examples: TROV-MOD-01 Monolith and Arch I, TROV-CYA-03 Silver Dollar
   Eucalyptus III, TROV-ERTH-04 Urn & Stone Sphere IV.
 - **Cart** — header Cart button, or the floating "Go to Cart" bar at

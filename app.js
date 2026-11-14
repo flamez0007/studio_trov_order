@@ -77,15 +77,13 @@ const cartSubtotal = () => cart.reduce((n, i) => n + i.qty * SIZES[i.size].price
 const findProduct = sku => PRODUCTS.find(p => p.sku === sku);
 
 /* ---------- views ---------- */
-const VIEWS = ['shop', 'collection', 'piece', 'cart', 'checkout', 'send', 'confirmation'];
+const VIEWS = ['shop', 'collection', 'cart', 'checkout', 'send', 'confirmation'];
 let currentCollection = 'mod';
-let currentPiece = null;
 function showView(name, param) {
   if (name === 'collection' && param) { currentCollection = param; renderCollectionPage(param); }
-  if (name === 'piece' && param) { currentPiece = param; renderPiecePage(param); }
   VIEWS.forEach(v => { const el = document.getElementById('view-' + v); if (el) el.hidden = (v !== name); });
   const floating = document.getElementById('floating-cart');
-  floating.hidden = !(['shop', 'collection', 'piece'].includes(name) && cartCount() > 0);
+  floating.hidden = !(['shop', 'collection'].includes(name) && cartCount() > 0);
   window.scrollTo({ top: 0 });
   if (name === 'cart') renderCart();
   if (name === 'send') renderSend();
@@ -107,7 +105,7 @@ function createProductCard(p, uid) {
   const card = document.createElement('article');
   card.className = 'product-card';
   card.innerHTML =
-    '<a class="product-link" href="#piece/' + p.sku + '" data-piece="' + p.sku + '">' +
+    '<a class="product-link" href="#product/' + p.sku + '" data-popup="' + p.sku + '">' +
     '<img src="' + p.img + '" alt="' + p.title + ' — unframed art print" loading="lazy" width="896" height="1200">' +
     '<p class="product-sku">' + p.sku + '</p>' +
     '<h4 class="product-title">' + p.title + '</h4></a>' +
@@ -162,21 +160,24 @@ function renderCollectionPage(collId) {
 }
 
 /* ---------- piece pages (15) ---------- */
-function renderPiecePage(sku) {
+/* ---------- product popup (full-screen) ----------
+   There are no individual product pages. Clicking a product opens
+   this full-screen popup with the full image, details and
+   add-to-order. Closes with the close button, tapping the backdrop,
+   or the Escape key. */
+let popupSku = null;
+function openProductPopup(sku) {
   const p = findProduct(sku); if (!p) return;
   const c = COLLECTIONS[p.collection];
-  const el = document.getElementById('piece-page');
+  popupSku = sku;
+  const el = document.getElementById('popup-content');
   el.innerHTML = '';
   const wrap = document.createElement('div');
-  const related = PRODUCTS.filter(x => x.collection === p.collection && x.sku !== p.sku);
   wrap.innerHTML =
-    '<p><a class="back-link" href="#collection" data-collection-view="' + p.collection + '">← ' + c.name + '</a> &nbsp;·&nbsp; <a class="back-link" href="#shop" data-goto="shop">Shop</a></p>' +
-    '<div class="piece-layout"><div class="piece-media">' +
-    '<figure><img class="flat" src="' + p.img + '" alt="' + p.title + ' — flat unframed art print" width="896" height="1200"><figcaption>The print itself — unframed.</figcaption></figure>' +
-    '<figure><img class="mock" src="' + p.mock + '" alt="' + p.title + ' framed in light oak in a considered interior" width="1200" height="800"><figcaption>Framed in light oak, styled in a considered interior. Frame for styling only — not included.</figcaption></figure>' +
-    '</div><div class="piece-info">' +
+    '<figure class="popup-figure"><img class="flat" src="' + p.img + '" alt="' + p.title + ' — flat unframed art print" width="896" height="1200"></figure>' +
+    '<div class="piece-info">' +
     '<p class="kicker">Collection ' + c.num + ' · ' + c.name + '</p>' +
-    '<h1>' + p.title + '</h1>' +
+    '<h1 id="popup-title">' + p.title + '</h1>' +
     '<p class="product-sku">' + p.sku + '</p>' +
     '<p class="piece-desc">' + p.desc + '</p>' +
     '<ul class="spec-list">' +
@@ -186,31 +187,38 @@ function renderPiecePage(sku) {
     '<li><strong>Unframed:</strong> Print only — frame not included. Standard frame sizes, prints fit right in.</li>' +
     '<li><strong>Lead time:</strong> 3–5 business days. Fulfilled on demand from New York via Creativehub.</li>' +
     '</ul>' +
+    '<figure class="popup-figure"><img class="mock" src="' + p.mock + '" alt="' + p.title + ' framed in light oak in a considered interior" width="1200" height="800"><figcaption>Styled in a considered interior. Frame for styling only — not included.</figcaption></figure>' +
     '<p class="product-price">Wholesale <strong>$40 Medium – $70 Large</strong> <s>MSRP $80 / $140</s></p>' +
-    '<div class="size-pills" role="group" aria-label="Size for ' + p.title + '" id="piece-sizes">' +
+    '<div class="size-pills" role="group" aria-label="Size for ' + p.title + '" id="popup-sizes">' +
     '<button type="button" class="size-pill" data-size="medium" aria-pressed="true"><strong>Medium — 12 × 16 in</strong>$40 wholesale</button>' +
     '<button type="button" class="size-pill" data-size="large" aria-pressed="false"><strong>Large — 18 × 24 in</strong>$70 wholesale</button>' +
     '</div>' +
-    '<div class="piece-buy-row"><div class="qty-row"><label for="qty-piece">Qty</label>' +
-    '<input type="number" id="qty-piece" min="1" max="99" value="1" inputmode="numeric" aria-label="Quantity"></div>' +
-    '<button type="button" class="btn btn-primary" id="piece-add">Add to Cart</button></div>' +
-    '<p class="added-note" id="piece-note" aria-live="polite"></p>' +
-    '</div></div>' +
-    '<section class="related"><h2>More from ' + c.name + '</h2><div class="product-row" id="related-grid"></div></section>';
+    '<div class="piece-buy-row"><div class="qty-row"><label for="qty-popup">Qty</label>' +
+    '<input type="number" id="qty-popup" min="1" max="99" value="1" inputmode="numeric" aria-label="Quantity"></div>' +
+    '<button type="button" class="btn btn-primary" id="popup-add">Add to Cart</button></div>' +
+    '<p class="added-note" id="popup-note" aria-live="polite"></p>' +
+    '</div>';
   el.appendChild(wrap);
   let selectedSize = 'medium';
-  wrap.querySelectorAll('#piece-sizes .size-pill').forEach(btn => {
+  wrap.querySelectorAll('#popup-sizes .size-pill').forEach(btn => {
     btn.addEventListener('click', () => {
       selectedSize = btn.dataset.size;
-      wrap.querySelectorAll('#piece-sizes .size-pill').forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
+      wrap.querySelectorAll('#popup-sizes .size-pill').forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
     });
   });
-  wrap.querySelector('#piece-add').addEventListener('click', () => {
-    const qty = parseInt(wrap.querySelector('#qty-piece').value, 10);
-    addToCart(p, selectedSize, qty, wrap.querySelector('#piece-note'));
+  wrap.querySelector('#popup-add').addEventListener('click', () => {
+    const qty = parseInt(wrap.querySelector('#qty-popup').value, 10);
+    addToCart(p, selectedSize, qty, wrap.querySelector('#popup-note'));
   });
-  const grid = wrap.querySelector('#related-grid');
-  related.forEach(r => grid.appendChild(createProductCard(r, 'rel-' + r.sku)));
+  document.getElementById('product-popup').hidden = false;
+  document.body.style.overflow = 'hidden';
+  const panel = document.querySelector('.popup-panel');
+  if (panel) panel.scrollTop = 0;
+}
+function closeProductPopup() {
+  document.getElementById('product-popup').hidden = true;
+  document.body.style.overflow = '';
+  popupSku = null;
 }
 
 /* ---------- cart UI ---------- */
@@ -218,7 +226,7 @@ function updateCartUI() {
   const n = cartCount();
   document.getElementById('cart-count').textContent = n;
   const floating = document.getElementById('floating-cart');
-  const onBrowse = ['shop', 'collection', 'piece'].some(v => !document.getElementById('view-' + v).hidden);
+  const onBrowse = ['shop', 'collection'].some(v => !document.getElementById('view-' + v).hidden);
   floating.hidden = !(onBrowse && n > 0);
   document.getElementById('floating-text').textContent = n + (n === 1 ? ' item' : ' items') + ' · ' + money(cartSubtotal());
 }
@@ -280,6 +288,7 @@ let orderData = null;
 let orderRef = '';
 let invoiceDate = '';
 let orderSent = false; // true once the order email has been sent to Studio TROV
+let sentOrder = null; // snapshot of items + totals taken at send time, for the confirmation page
 
 function paymentDetailsText() {
   return [
@@ -296,9 +305,12 @@ function paymentDetailsText() {
 }
 
 function orderSummaryHTML() {
-  const sub = cartSubtotal();
-  const del = deliveryAmount();
-  const rows = cart.map(item => {
+  // After a successful send the cart is cleared, so the confirmation
+  // page reads the snapshot taken at send time instead of the empty cart.
+  const items = sentOrder ? sentOrder.items : cart;
+  const sub = sentOrder ? sentOrder.subtotal : cartSubtotal();
+  const del = sentOrder ? sentOrder.delivery : deliveryAmount();
+  const rows = items.map(item => {
     const p = findProduct(item.sku); const size = SIZES[item.size];
     return '<tr><td>' + p.sku + '<br>' + p.title + '</td><td>' + size.label + '</td><td>' + item.qty + '</td><td>' + money(item.qty * size.price) + '</td></tr>';
   }).join('');
@@ -327,6 +339,215 @@ function orderSummaryText() {
     'Studio TROV will check the payment, then fulfil the order via Creativehub and email the tracking number. Payment is not verified automatically.',
     'All works are unframed art prints. Lead time 3–5 business days. Fulfilled from New York via Creativehub.');
   return lines.join('\n');
+}
+
+/* ---------- saved buyer details (returning customers) ----------
+   Details are saved on the buyer's own device (localStorage) — no
+   accounts, nothing leaves their browser. Next order, the form fills
+   itself in; any change the buyer makes is saved again automatically.
+   The email lookup loads the saved details for that email. */
+const DETAILS_KEY = 'trovBuyerDetails';
+const DETAIL_FIELDS = ['fullName', 'shopName', 'email', 'phone', 'street', 'city', 'state', 'postcode', 'country',
+  'billingStreet', 'billingCity', 'billingPostcode', 'billingCountry', 'notes', 'source'];
+function readSavedDetails() {
+  try { const d = JSON.parse(localStorage.getItem(DETAILS_KEY) || 'null'); return d && typeof d === 'object' ? d : null; }
+  catch (e) { return null; }
+}
+function collectFormDetails(form) {
+  const fd = new FormData(form);
+  const d = { billingSame: form.elements.billingSame.checked };
+  DETAIL_FIELDS.forEach(n => { d[n] = String(fd.get(n) || '').trim(); });
+  return d;
+}
+function saveDetailsFromForm() {
+  try {
+    const prev = readSavedDetails() || {};
+    const d = collectFormDetails(document.getElementById('order-form'));
+    if (prev.pinHash) d.pinHash = prev.pinHash; // never drop the PIN on auto-save
+    localStorage.setItem(DETAILS_KEY, JSON.stringify(d));
+  } catch (e) {}
+}
+/* The 4-digit PIN is never stored as plain text — only its hash.
+   SHA-256 when available, otherwise a simple fallback hash. */
+async function hashPin(pin) {
+  try {
+    if (window.crypto && crypto.subtle && crypto.subtle.digest) {
+      const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('trov-pin:' + pin));
+      return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+  } catch (e) {}
+  let h = 2166136261; const s = 'trov-pin:' + pin;
+  for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+  return 'fb-' + (h >>> 0).toString(16);
+}
+/* Four-box PIN fields: type one digit and the cursor moves on;
+   Backspace on an empty box moves back; pasting fills all four. */
+function pinValue(container) { return [...container.querySelectorAll('input')].map(i => i.value).join(''); }
+function clearPinBoxes(container) { container.querySelectorAll('input').forEach(i => { i.value = ''; }); }
+function initPinBoxes(container) {
+  const inputs = [...container.querySelectorAll('input')];
+  inputs.forEach((input, i) => {
+    input.addEventListener('input', () => {
+      input.value = input.value.replace(/\D/g, '').slice(0, 1);
+      if (input.value && i < inputs.length - 1) inputs[i + 1].focus();
+    });
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Backspace' && !input.value && i > 0) { e.preventDefault(); inputs[i - 1].focus(); inputs[i - 1].value = ''; }
+    });
+    input.addEventListener('paste', e => {
+      e.preventDefault();
+      const data = (e.clipboardData || window.clipboardData);
+      const text = data && data.getData ? data.getData('text') : '';
+      const digits = (text || '').replace(/\D/g, '').slice(0, 4);
+      digits.split('').forEach((d, j) => { if (inputs[j]) inputs[j].value = d; });
+      if (digits.length) inputs[Math.min(digits.length, inputs.length - 1)].focus();
+    });
+  });
+}
+/* ---------- Supabase (returning-customer database) ----------
+   Fill these in once the Studio TROV Supabase project exists — the
+   table SQL is in ~/workspace/studio-trov/supabase-buyer-details.sql.
+   The anon key is public by design; NEVER put the service_role
+   (secret) key in this file. Until these are filled in, profiles
+   save on the buyer's own device only and the cloud calls below
+   simply do nothing. */
+const SUPABASE_URL = '';
+const SUPABASE_ANON_KEY = '';
+function supabaseReady() { return !!SUPABASE_URL && !!SUPABASE_ANON_KEY; }
+async function saveProfileToCloud(profile) {
+  if (!supabaseReady()) return false;
+  try {
+    const res = await fetch(SUPABASE_URL + '/rest/v1/buyer_details', {
+      method: 'POST',
+      headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+        'x-buyer-email': profile.email,
+        'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates' },
+      body: JSON.stringify({ email: profile.email, pin_hash: profile.pinHash, details: profile })
+    });
+    return res.ok;
+  } catch (e) { return false; }
+}
+async function loadProfileFromCloud(email) {
+  if (!supabaseReady()) return null;
+  try {
+    const res = await fetch(SUPABASE_URL + '/rest/v1/buyer_details?email=eq.' + encodeURIComponent(email) + '&select=details,pin_hash', {
+      headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+        'x-buyer-email': email }
+    });
+    if (!res.ok) return null;
+    const rows = await res.json();
+    if (!rows || !rows.length) return null;
+    const d = rows[0].details || {};
+    d.pinHash = rows[0].pin_hash || d.pinHash;
+    return d;
+  } catch (e) { return null; }
+}
+function fillFormDetails(details) {
+  const form = document.getElementById('order-form');
+  DETAIL_FIELDS.forEach(n => { if (form.elements[n] && details[n] !== undefined) form.elements[n].value = details[n]; });
+  if (details.billingSame !== undefined) form.elements.billingSame.checked = !!details.billingSame;
+  form.elements.billingSame.dispatchEvent(new Event('change'));
+}
+function initSavedDetails() {
+  const form = document.getElementById('order-form');
+  // Any change is saved again automatically.
+  form.addEventListener('input', saveDetailsFromForm);
+  form.addEventListener('change', saveDetailsFromForm);
+  // Returning customer lookup: enter the email + PIN you saved with.
+  document.getElementById('returning-load').addEventListener('click', async () => {
+    const note = document.getElementById('returning-note');
+    const email = document.getElementById('returning-email').value.trim().toLowerCase();
+    const pin = pinValue(document.getElementById('returning-pin-boxes'));
+    if (!email) { note.textContent = 'Enter the email you ordered with.'; return; }
+    let saved = readSavedDetails();
+    if (!saved || !saved.email || saved.email.toLowerCase() !== email) {
+      if (!supabaseReady()) {
+        note.textContent = 'No saved details found for that email. Fill in the form below and we\u2019ll remember them for your next order.';
+        return;
+      }
+      saved = await loadProfileFromCloud(email);
+    }
+    if (saved && saved.email && saved.email.toLowerCase() === email) {
+      if (saved.pinHash) {
+        if (!pin || !/^\d{4}$/.test(pin)) { note.textContent = 'Enter the 4-digit PIN you set when you saved your details.'; return; }
+        if ((await hashPin(pin)) !== saved.pinHash) { note.textContent = 'That PIN does not match. Try again.'; return; }
+      }
+      fillFormDetails(saved);
+      try { localStorage.setItem(DETAILS_KEY, JSON.stringify(saved)); } catch (e) {}
+      document.getElementById('saved-note').hidden = false;
+      note.textContent = 'Your details are filled in — change anything you need, and we\u2019ll remember the changes.';
+    } else {
+      note.textContent = 'No saved details found for that email. Fill in the form below and we\u2019ll remember them for your next order.';
+    }
+  });
+  document.getElementById('returning-clear').addEventListener('click', () => {
+    try { localStorage.removeItem(DETAILS_KEY); } catch (e) {}
+    form.reset();
+    document.getElementById('returning-email').value = '';
+    clearPinBoxes(document.getElementById('returning-pin-boxes'));
+    document.getElementById('returning-note').textContent = 'Saved details cleared.';
+    document.getElementById('saved-note').hidden = true;
+  });
+  // If details are already saved on this device, fill the form in.
+  const saved = readSavedDetails();
+  if (saved && saved.email) { fillFormDetails(saved); document.getElementById('saved-note').hidden = false; }
+  initPinBoxes(document.getElementById('returning-pin-boxes'));
+}
+
+/* ---------- save-details prompt (after first order) ----------
+   Shown once, right after a successful order send, when the buyer
+   has not saved their details yet. No = back to the home page.
+   Yes = email + 4-digit PIN, then save (device now, Supabase too
+   once it is configured). */
+function openSaveDetailsPrompt() {
+  const saved = readSavedDetails();
+  if (saved && saved.pinHash) return; // already saved — don't ask again
+  document.getElementById('save-details-ask').hidden = false;
+  document.getElementById('save-details-form').hidden = true;
+  document.getElementById('save-details-done').hidden = true;
+  document.getElementById('save-details-email').value = orderData ? orderData.email : '';
+  clearPinBoxes(document.getElementById('save-details-pin-boxes'));
+  document.getElementById('save-details-error').hidden = true;
+  const pop = document.getElementById('save-details-popup');
+  pop.hidden = false;
+  document.body.style.overflow = 'hidden';
+}
+function closeSaveDetailsPopup() {
+  document.getElementById('save-details-popup').hidden = true;
+  document.body.style.overflow = '';
+}
+function initSaveDetailsPopup() {
+  initPinBoxes(document.getElementById('save-details-pin-boxes'));
+  document.getElementById('save-details-no').addEventListener('click', () => {
+    closeSaveDetailsPopup();
+    showView('shop');
+  });
+  document.getElementById('save-details-yes').addEventListener('click', () => {
+    document.getElementById('save-details-ask').hidden = true;
+    document.getElementById('save-details-form').hidden = false;
+    document.getElementById('save-details-pin').focus();
+  });
+  document.getElementById('save-details-cancel').addEventListener('click', () => {
+    closeSaveDetailsPopup(); // stay on the confirmation page
+  });
+  document.getElementById('save-details-done-btn').addEventListener('click', () => {
+    closeSaveDetailsPopup(); // stay on the confirmation page
+  });
+  document.getElementById('save-details-save').addEventListener('click', async () => {
+    const err = document.getElementById('save-details-error');
+    const email = document.getElementById('save-details-email').value.trim().toLowerCase();
+    const pin = pinValue(document.getElementById('save-details-pin-boxes'));
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err.textContent = 'Please enter a valid email address.'; err.hidden = false; return; }
+    if (!/^\d{4}$/.test(pin)) { err.textContent = 'Your PIN must be exactly 4 digits.'; err.hidden = false; return; }
+    err.hidden = true;
+    const profile = collectFormDetails(document.getElementById('order-form'));
+    profile.email = email;
+    profile.pinHash = await hashPin(pin);
+    try { localStorage.setItem(DETAILS_KEY, JSON.stringify(profile)); } catch (e) {}
+    await saveProfileToCloud(profile);
+    document.getElementById('save-details-form').hidden = true;
+    document.getElementById('save-details-done').hidden = false;
+  });
 }
 
 /* ---------- checkout form ---------- */
@@ -365,6 +586,7 @@ function initCheckout() {
     if (data.phone.replace(/\D/g, '').length < 7) { err.textContent = 'Please enter a valid phone number.'; err.hidden = false; form.elements.phone.setAttribute('aria-invalid', 'true'); return; }
     err.hidden = true;
     orderData = data;
+    saveDetailsFromForm();
     // Order number + date are generated here, on submitting the order
     // form — the order only exists from this point on. The buyer then
     // reviews it and sends it by email; Studio TROV invoices from it.
@@ -373,6 +595,7 @@ function initCheckout() {
     orderRef = 'TROV-' + ymd + '-' + Math.floor(1000 + Math.random() * 9000);
     invoiceDate = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
     orderSent = false;
+    sentOrder = null; // new order — the confirmation summary must not show the last one
     showView('send');
   });
 }
@@ -401,7 +624,7 @@ function renderSend() {
   document.getElementById('send-mailto-btn').href = 'mailto:' + EMAIL + '?subject=' + subject + '&body=' + body;
   const btn = document.getElementById('send-order-btn');
   btn.disabled = false;
-  btn.textContent = orderSent ? 'Order sent ✓ — see confirmation' : 'Send order email to Studio TROV →';
+  btn.textContent = orderSent ? 'Order sent ✓ — see confirmation' : 'Send Order';
   document.getElementById('send-status').textContent = '';
   document.getElementById('send-fallback').hidden = true;
 }
@@ -449,8 +672,10 @@ async function sendOrderEmail() {
     const ok = data && (data.success === true || data.success === 'true');
     if (ok) {
       orderSent = true;
+      sentOrder = { items: cart.map(i => ({ ...i })), subtotal: cartSubtotal(), delivery: deliveryAmount() };
       cart = []; saveCart(); updateCartUI(); renderCart();
       showView('confirmation');
+      openSaveDetailsPrompt();
       return;
     }
     const msg = (data && data.message) ? String(data.message) : '';
@@ -520,8 +745,10 @@ function initConfirmation() {
 /* ---------- navigation (delegated — covers dynamically added links too) ---------- */
 function initNav() {
   document.addEventListener('click', e => {
-    const pieceLink = e.target.closest('[data-piece]');
-    if (pieceLink) { e.preventDefault(); showView('piece', pieceLink.dataset.piece); return; }
+    const popupLink = e.target.closest('[data-popup]');
+    if (popupLink) { e.preventDefault(); openProductPopup(popupLink.dataset.popup); return; }
+    const closePopup = e.target.closest('[data-close-popup]');
+    if (closePopup) { e.preventDefault(); closeProductPopup(); return; }
     const collLink = e.target.closest('[data-collection-view]');
     if (collLink) { e.preventDefault(); showView('collection', collLink.dataset.collectionView); return; }
     const goto = e.target.closest('[data-goto]');
@@ -535,6 +762,9 @@ function initNav() {
     }
     const howLink = e.target.closest('a[href="#how-it-works"]');
     if (howLink) { const d = document.getElementById('how-details'); if (d) d.open = true; }
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && !document.getElementById('product-popup').hidden) closeProductPopup();
   });
   document.getElementById('delivery-region').addEventListener('change', renderCart);
   document.getElementById('to-checkout').addEventListener('click', () => {
@@ -550,6 +780,8 @@ function initNav() {
 renderProducts();
 initNav();
 initCheckout();
+initSavedDetails();
+initSaveDetailsPopup();
 initSend();
 initConfirmation();
 renderCart();

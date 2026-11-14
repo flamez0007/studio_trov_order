@@ -32,16 +32,15 @@
       <a href="#trade" data-goto="shop" data-scroll="trade">Trade info</a>
     </nav>
     <div class="header-actions">
-      <a class="icon-btn" href="mailto:thestudiotrov@gmail.com" title="Reach us via email — thestudiotrov@gmail.com" aria-label="Reach us via email">
-        <span aria-hidden="true">✉</span><span class="icon-label">Email us</span>
-      </a>
+      <button class="icon-btn" type="button" data-goto="shop" title="Home — Studio TROV" aria-label="Home">
+        <span aria-hidden="true">⌂</span><span class="icon-label">Home</span>
+      </button>
       <button class="icon-btn cart-btn" type="button" data-goto="cart" aria-label="View cart">
         <span aria-hidden="true">🛒</span><span class="icon-label">Cart</span>
         <span class="cart-count" id="cart-count" aria-live="polite">0</span>
       </button>
     </div>
   </div>
-  <p class="draft-banner">Wholesale ordering — send your order by email, we send your invoice straight away, pay by bank transfer.</p>
 </header>
 
 <main id="main">
@@ -51,18 +50,16 @@
   <section class="hero container">
     <div class="hero-text">
       <p class="kicker">Wholesale ordering &middot; Open Collection &middot; 15 works</p>
-      <h1>Architectural art for considered spaces.</h1>
-      <p class="lead">Welcome to Studio TROV. We are an independent trade print studio producing museum-grade Gicl&eacute;e editions on Hahnem&uuml;hle German Etching 310gsm archival cotton rag — for interior spaces, boutique hospitality and independent retail.</p>
+      <h1>Architectural art for calm spaces.</h1>
+      <p class="lead">Welcome to Studio TROV&rsquo;s open collections. Please place your order.</p>
       <p class="frameless"><strong>All works are sold as unframed art prints.</strong> Frames shown in photographs are for styling only and are not included.</p>
       <p class="sizes-note">Standard frame sizes — Medium 12 &times; 16 in and Large 18 &times; 24 in. Buy a standard frame and the print fits right in.</p>
       <div class="hero-cta">
-        <a class="btn btn-primary" href="#collections">Browse the collections</a>
         <a class="btn btn-ghost" href="#how-it-works">How ordering works</a>
       </div>
     </div>
     <figure class="hero-media">
       <img src="assets/hero-mod01.jpg" alt="Monolith and Arch I, framed in light oak in a considered interior" width="1200" height="800">
-      <figcaption>Framed in light oak, styled in a considered interior. Frame for styling only.</figcaption>
     </figure>
   </section>
 
@@ -114,7 +111,7 @@
     <ol class="steps">
       <li><strong>1. Pick your prints</strong><span>Choose a size and quantity for each work and add it to your cart. Opening order minimum $200.</span></li>
       <li><strong>2. Tell us where to send them</strong><span>Your shop name, email, phone and delivery address — plus any delivery notes.</span></li>
-      <li><strong>3. Send your order by email</strong><span>One click sends your order straight to thestudiotrov@gmail.com — no email app needed.</span></li>
+      <li><strong>3. Send your order</strong><span>One click sends your order straight to us. No email needed.</span></li>
       <li><strong>4. We email your invoice &amp; fulfil</strong><span>Your invoice arrives straight away. Pay by bank transfer using your order number as the reference, then your order is printed and dispatched from New York via Creativehub. We email your tracking number once it ships.</span></li>
     </ol>
     <p class="fineprint">Certificate of Authenticity included with every order. Blind / white-label dropshipping in rigid flat kraft mailers, plastic-free. All prices USD.</p>
@@ -125,11 +122,6 @@
 <!-- ============ COLLECTION PAGE VIEW (dynamic) ============ -->
 <section id="view-collection" class="view" hidden aria-label="Collection page">
   <div class="container" id="collection-page"></div>
-</section>
-
-<!-- ============ PIECE PAGE VIEW (dynamic) ============ -->
-<section id="view-piece" class="view" hidden aria-label="Piece page">
-  <div class="container" id="piece-page"></div>
 </section>
 
 <!-- ============ CART VIEW ============ -->
@@ -175,6 +167,24 @@
     <p class="kicker">Step 2 of 3 &middot; Order details</p>
     <h1>Your details</h1>
     <p class="section-intro">We need these to fulfil and deliver your order, and to send your tracking number.</p>
+    <div class="returning" id="returning-box">
+      <p><strong>Returning customer?</strong> Enter the email and PIN you saved with and we'll fill in your details.</p>
+      <div class="returning-row">
+        <label for="returning-email">Email you ordered with</label>
+        <input type="email" id="returning-email" class="nice-input" placeholder="you@yourshop.com" autocomplete="email">
+        <label for="returning-pin">Your 4-digit PIN</label>
+        <span class="pin-boxes pin-boxes-small" id="returning-pin-boxes" role="group" aria-label="Your 4-digit PIN">
+          <input type="password" id="returning-pin" inputmode="numeric" pattern="[0-9]" maxlength="1" aria-label="PIN digit 1">
+          <input type="password" inputmode="numeric" pattern="[0-9]" maxlength="1" aria-label="PIN digit 2">
+          <input type="password" inputmode="numeric" pattern="[0-9]" maxlength="1" aria-label="PIN digit 3">
+          <input type="password" inputmode="numeric" pattern="[0-9]" maxlength="1" aria-label="PIN digit 4">
+        </span>
+        <button class="btn btn-ghost" type="button" id="returning-load">Load my details</button>
+      </div>
+      <p class="returning-note" id="returning-note" aria-live="polite"></p>
+      <p class="fineprint">Your details are saved only on this device, in your browser — nothing is stored on our site. <button class="link-btn" type="button" id="returning-clear">Clear my saved details</button></p>
+    </div>
+    <p class="saved-note" id="saved-note" hidden>Your saved details are filled in — change anything you need, and we'll remember the changes for next time.</p>
     <form id="order-form" novalidate>
       <fieldset>
         <legend>Buyer</legend>
@@ -239,7 +249,7 @@
     <p class="section-intro">Check everything below, then send it. Your order goes straight to Studio TROV at thestudiotrov@gmail.com — and we email your invoice straight back to you.</p>
     <div id="send-summary" aria-live="polite"></div>
     <div class="actions-row wrap">
-      <button class="btn btn-primary" type="button" id="send-order-btn">Send order email to Studio TROV →</button>
+      <button class="btn btn-primary" type="button" id="send-order-btn">Send Order</button>
       <button class="btn btn-ghost" type="button" id="copy-order-btn-send">Copy order summary</button>
       <button class="btn btn-ghost" type="button" data-goto="checkout">← Back to details</button>
     </div>
@@ -272,6 +282,60 @@
 </section>
 </main>
 
+<!-- ============ SAVE DETAILS POPUP (after first order) ============ -->
+<!-- Shown once, after a successful order send, when the buyer has
+     not saved their details yet. Yes asks for email + a 4-digit PIN
+     and saves them; No goes straight back to the home page. -->
+<div id="save-details-popup" class="popup" hidden role="dialog" aria-modal="true" aria-labelledby="save-details-title">
+  <div class="popup-backdrop"></div>
+  <div class="popup-panel popup-panel-small">
+    <div id="save-details-ask">
+      <h2 id="save-details-title">Save my details for later purchases?</h2>
+      <p>Next time you order, enter your email and PIN and your details will fill themselves in.</p>
+      <div class="actions-row">
+        <button class="btn btn-ghost" type="button" id="save-details-no">No</button>
+        <button class="btn btn-primary" type="button" id="save-details-yes">Yes</button>
+      </div>
+    </div>
+    <div id="save-details-form" hidden>
+      <h2>Save my details</h2>
+      <label>Email<input type="email" id="save-details-email" class="nice-input" autocomplete="email" placeholder="you@yourshop.com"></label>
+      <span class="pin-label">Choose a 4-digit PIN</span>
+      <span class="pin-boxes" id="save-details-pin-boxes" role="group" aria-label="Choose a 4-digit PIN">
+        <input type="password" id="save-details-pin" inputmode="numeric" pattern="[0-9]" maxlength="1" aria-label="PIN digit 1">
+        <input type="password" inputmode="numeric" pattern="[0-9]" maxlength="1" aria-label="PIN digit 2">
+        <input type="password" inputmode="numeric" pattern="[0-9]" maxlength="1" aria-label="PIN digit 3">
+        <input type="password" inputmode="numeric" pattern="[0-9]" maxlength="1" aria-label="PIN digit 4">
+      </span>
+      <p class="fineprint">You'll enter this email and PIN next time to load your details.</p>
+      <p class="form-error" id="save-details-error" role="alert" hidden></p>
+      <div class="actions-row">
+        <button class="btn btn-ghost" type="button" id="save-details-cancel">Cancel</button>
+        <button class="btn btn-primary" type="button" id="save-details-save">Save my details</button>
+      </div>
+    </div>
+    <div id="save-details-done" hidden>
+      <h2>Details saved ✓</h2>
+      <p>Next time you order, enter your email and PIN on the order form and your details will fill in.</p>
+      <div class="actions-row">
+        <button class="btn btn-primary" type="button" id="save-details-done-btn">Done</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PRODUCT POPUP (full-screen) ============ -->
+<!-- Clicking a product opens this full-screen popup with the full
+     image, details and add-to-order — there are no individual
+     product pages. -->
+<div id="product-popup" class="popup" hidden role="dialog" aria-modal="true" aria-labelledby="popup-title">
+  <div class="popup-backdrop" data-close-popup></div>
+  <div class="popup-panel">
+    <button class="popup-close" type="button" data-close-popup aria-label="Close">✕ Close</button>
+    <div id="popup-content"></div>
+  </div>
+</div>
+
 <!-- ============ FLOATING GO TO CART (wireframe) ============ -->
 <div class="floating-cart" id="floating-cart" hidden>
   <div class="container floating-inner">
@@ -290,7 +354,6 @@
     </div>
     <div>
       <p class="footer-label">Contact</p>
-      <p><a href="mailto:thestudiotrov@gmail.com">thestudiotrov@gmail.com</a></p>
       <p>Lead time 3–5 business days.</p>
     </div>
     <div>
@@ -301,9 +364,8 @@
       <p>All works are unframed art prints — standard frame sizes.</p>
     </div>
   </div>
-  <p class="footer-base">© Studio TROV — Wholesale ordering. Order by email, pay by bank transfer on invoice.</p>
 </footer>
 
-<script src="app.js?v=20261114c"></script>
+<script src="app.js?v=20261114d"></script>
 </body>
 </html>
