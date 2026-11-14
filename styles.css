@@ -71,11 +71,11 @@ button{font:inherit}
 
 /* Trade strip */
 .trade-strip{background:var(--navy);color:#fff;margin:28px 0 0}
-.trade-grid{display:grid;gap:16px;padding:20px 16px}
-.trade-grid div{display:flex;flex-direction:column}
+.trade-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 16px;padding:20px 16px}
+.trade-grid div{display:flex;flex-direction:column;min-width:0}
 .trade-label{font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--pale);font-weight:600}
-.trade-grid strong{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700}
-.trade-sub{font-size:.82rem;opacity:.8}
+.trade-grid strong{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;line-height:1.25;overflow-wrap:break-word}
+.trade-sub{font-size:.8rem;opacity:.8}
 
 /* Collections — mobile: horizontal scroll rows (wireframe); tablet/desktop: grid */
 .collections{padding:32px 16px 8px}
@@ -104,8 +104,14 @@ button{font:inherit}
 .add-btn{width:100%}
 .added-note{font-size:.82rem;color:var(--terra);font-weight:600;min-height:1.2em}
 
-/* How it works */
+/* How it works — collapsible drop-down (collapsed by default) */
 .how{padding:24px 16px 40px}
+.how-details summary{display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;list-style:none}
+.how-details summary::-webkit-details-marker{display:none}
+.how-details summary h2{margin:0}
+.how-chevron{font-size:1.5rem;line-height:1;color:var(--terra);transition:transform .2s ease;flex:0 0 auto}
+.how-details[open ] .how-chevron{transform:rotate(180deg)}
+.how-details .steps{margin-top:16px}
 .steps{list-style:none;margin:0;padding:0;display:grid;gap:14px;counter-reset:step}
 .steps li{background:#fff;border:1px solid var(--hair);border-radius:var(--radius);padding:16px}
 .steps strong{display:block;font-family:'Playfair Display',serif;color:var(--navy);font-size:1.05rem;margin-bottom:4px}
@@ -218,8 +224,11 @@ form input[aria-invalid="true"]{border-color:#B91C1C}
 .piece-media figcaption{font-size:.8rem;color:var(--grey);margin-top:6px}
 .piece-info h1{font-size:1.8rem}
 .piece-desc{font-size:.98rem}
-.spec-list{list-style:none;margin:0 0 16px;padding:0;display:grid;gap:8px}
-.spec-list li{border-top:1px solid var(--hair);padding-top:8px;font-size:.92rem}
+.spec-list{list-style:none;margin:0 0 16px;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 14px}
+.spec-list li{border-top:1px solid var(--hair);padding-top:8px;font-size:.88rem;min-width:0;overflow-wrap:break-word}
+.piece-buy-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:12px}
+.piece-buy-row .qty-row{flex:0 0 auto}
+.piece-buy-row #piece-add{flex:1;min-width:160px}
 .spec-list strong{color:var(--navy)}
 .product-link{text-decoration:none;color:inherit;display:block}
 .product-link:hover .product-title{color:var(--terra)}

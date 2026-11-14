@@ -4,7 +4,7 @@
 'use strict';
 
 const EMAIL = 'thestudiotrov@gmail.com';
-const MINIMUM = 150;
+const MINIMUM = 200;
 const DELIVERY = { '19': { label: 'EU / USA / Canada', amount: 19 }, '49': { label: 'Rest of world', amount: 49 } };
 const SIZES = {
   medium: { label: 'Medium — 12 × 16 in', price: 40, msrp: 80 },
@@ -171,12 +171,12 @@ function renderPiecePage(sku) {
     '<button type="button" class="size-pill" data-size="medium" aria-pressed="true"><strong>Medium — 12 × 16 in</strong>$40 wholesale</button>' +
     '<button type="button" class="size-pill" data-size="large" aria-pressed="false"><strong>Large — 18 × 24 in</strong>$70 wholesale</button>' +
     '</div>' +
-    '<div class="qty-row" style="margin-top:12px"><label for="qty-piece">Qty</label>' +
+    '<div class="piece-buy-row"><div class="qty-row"><label for="qty-piece">Qty</label>' +
     '<input type="number" id="qty-piece" min="1" max="99" value="1" inputmode="numeric" aria-label="Quantity"></div>' +
-    '<p style="margin-top:12px"><button type="button" class="btn btn-primary" id="piece-add">Add to Cart</button></p>' +
+    '<button type="button" class="btn btn-primary" id="piece-add">Add to Cart</button></div>' +
     '<p class="added-note" id="piece-note" aria-live="polite"></p>' +
     '</div></div>' +
-    '<section class="related"><h2>More from ' + c.name + '</h2><div class="collection-page-grid" id="related-grid"></div></section>';
+    '<section class="related"><h2>More from ' + c.name + '</h2><div class="product-row" id="related-grid"></div></section>';
   el.appendChild(wrap);
   let selectedSize = 'medium';
   wrap.querySelectorAll('#piece-sizes .size-pill').forEach(btn => {
@@ -382,9 +382,12 @@ function initNav() {
       e.preventDefault();
       showView(goto.dataset.goto);
       if (goto.dataset.scroll) {
+        if (goto.dataset.scroll === 'how-it-works') { const d = document.getElementById('how-details'); if (d) d.open = true; }
         setTimeout(() => { const t = document.getElementById(goto.dataset.scroll); if (t) t.scrollIntoView({ behavior: 'smooth' }); }, 50);
       }
     }
+    const howLink = e.target.closest('a[href="#how-it-works"]');
+    if (howLink) { const d = document.getElementById('how-details'); if (d) d.open = true; }
   });
   document.getElementById('delivery-region').addEventListener('change', renderCart);
   document.getElementById('to-checkout').addEventListener('click', () => {

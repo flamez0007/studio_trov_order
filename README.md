@@ -36,7 +36,7 @@ fonts in `fonts/`).
   Eucalyptus III, TROV-ERTH-04 Urn & Stone Sphere IV.
 - **Cart** — header Cart button, or the floating "Go to Cart" bar at
   the bottom of the page (as sketched). Edit quantities, remove items,
-  delivery region, opening-minimum progress ($150).
+  delivery region, opening-minimum progress ($200).
 - **Order details (checkout)** — buyer name, shop name, email, phone,
   delivery address, billing-same checkbox, delivery notes, how found.
 - **Payment** — order summary + Stripe, clearly marked DRAFT:
@@ -53,7 +53,7 @@ fonts in `fonts/`).
 - Wholesale: Medium 12×16 in $40 (MSRP $80), Large 18×24 in $70
   (MSRP $140). The 40% trade tier ($48/$84) is NOT shown.
 - Delivery: $19 EU / USA / Canada, $49 rest of world.
-- Opening order minimum $150 (shown as $150–$200 in trade terms).
+- Opening order minimum $200.
 - Lead time 3–5 business days; Certificate of Authenticity included;
   blind / white-label dropshipping; fulfilled from New York via
   Creativehub. Contact: thestudiotrov@gmail.com.

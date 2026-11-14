@@ -70,7 +70,7 @@
   <section class="trade-strip" id="trade" aria-label="Trade terms at a glance">
     <div class="container trade-grid">
       <div><span class="trade-label">Wholesale</span><strong>$40 Medium &middot; $70 Large</strong><span class="trade-sub">MSRP $80 / $140</span></div>
-      <div><span class="trade-label">Opening order</span><strong>$150 minimum</strong><span class="trade-sub">Opening order $150–$200</span></div>
+      <div><span class="trade-label">Opening order</span><strong>$200 minimum</strong><span class="trade-sub">Opening order minimum</span></div>
       <div><span class="trade-label">Lead time</span><strong>3–5 business days</strong><span class="trade-sub">Fulfilled on demand</span></div>
       <div><span class="trade-label">Delivery</span><strong>$19 EU, USA &amp; Canada</strong><span class="trade-sub">$49 rest of world</span></div>
     </div>
@@ -79,13 +79,10 @@
   <!-- Collections (wireframe: Collections, Collection 1/2/3 rows) -->
   <section class="collections container" id="collections" aria-label="Collections">
     <h2>Collections</h2>
-    <p class="section-intro">Five works in each collection. Pick a size, choose a quantity, and add to cart. All prices are wholesale, in USD.</p>
-
     <section class="collection" id="collection-1" aria-labelledby="coll-1-title">
       <div class="collection-head">
         <p class="kicker">Collection 01 &middot; Five works</p>
         <h3 id="coll-1-title">Modernist Form &amp; Structural Arches</h3>
-        <p>Arches, monoliths and quiet geometry — bold forms in warm, earthy colour, made to hold a room.</p>
         <p><a href="#collection-1" class="view-collection-link" data-collection-view="mod">View Collection 1 →</a></p>
       </div>
       <div class="product-row" data-collection="mod"></div>
@@ -95,7 +92,6 @@
       <div class="collection-head">
         <p class="kicker">Collection 02 &middot; Five works</p>
         <h3 id="coll-2-title">Archival Herbarium &amp; Botanical Cyanotypes</h3>
-        <p>Botanical cyanotypes in deep blue — ginkgo, fern, eucalyptus, grasses and olive, like herbarium plates.</p>
         <p><a href="#collection-2" class="view-collection-link" data-collection-view="cya">View Collection 2 →</a></p>
       </div>
       <div class="product-row" data-collection="cya"></div>
@@ -105,7 +101,6 @@
       <div class="collection-head">
         <p class="kicker">Collection 03 &middot; Five works</p>
         <h3 id="coll-3-title">Abstract Earth</h3>
-        <p>Handmade vessels and stone forms — terracotta, travertine and warm linen, painted in soft light.</p>
         <p><a href="#collection-3" class="view-collection-link" data-collection-view="erth">View Collection 3 →</a></p>
       </div>
       <div class="product-row" data-collection="erth"></div>
@@ -114,14 +109,16 @@
 
   <!-- How ordering works -->
   <section class="how container" id="how-it-works" aria-labelledby="how-title">
-    <h2 id="how-title">How ordering works</h2>
+    <details class="how-details" id="how-details">
+    <summary><h2 id="how-title">How ordering works</h2><span class="how-chevron" aria-hidden="true">▾</span></summary>
     <ol class="steps">
-      <li><strong>1. Pick your prints</strong><span>Choose a size and quantity for each work and add it to your cart. Opening order minimum $150.</span></li>
+      <li><strong>1. Pick your prints</strong><span>Choose a size and quantity for each work and add it to your cart. Opening order minimum $200.</span></li>
       <li><strong>2. Tell us where to send them</strong><span>Your shop name, email, phone and delivery address — plus any delivery notes.</span></li>
       <li><strong>3. Pay securely</strong><span>Payment is by Stripe secure checkout (to be connected — no real payment is taken in this draft).</span></li>
       <li><strong>4. We fulfil &amp; send tracking</strong><span>Printed and dispatched from New York via Creativehub. We email your tracking number once it ships.</span></li>
     </ol>
     <p class="fineprint">Certificate of Authenticity included with every order. Blind / white-label dropshipping in rigid flat kraft mailers, plastic-free. All prices USD.</p>
+    </details>
   </section>
 </section>
 
@@ -147,7 +144,7 @@
     <div id="cart-filled" hidden>
       <ul class="cart-list" id="cart-list"></ul>
       <div class="minimum" id="minimum-box">
-        <div class="minimum-bar" role="progressbar" aria-label="Progress to opening order minimum" aria-valuemin="0" aria-valuemax="150" aria-valuenow="0" id="minimum-bar"><span id="minimum-fill"></span></div>
+        <div class="minimum-bar" role="progressbar" aria-label="Progress to opening order minimum" aria-valuemin="0" aria-valuemax="200" aria-valuenow="0" id="minimum-bar"><span id="minimum-fill"></span></div>
         <p id="minimum-text"></p>
       </div>
       <div class="totals">
@@ -250,7 +247,7 @@
       <button class="btn btn-ghost" type="button" data-goto="checkout">← Back to details</button>
       <button class="btn btn-primary" type="button" id="confirm-pay">Confirm order — draft payment</button>
     </div>
-    <p class="fineprint">By confirming, you agree to the trade terms: opening order minimum $150, lead time 3–5 business days, all prices USD. Your order will be emailed to Studio TROV on the next screen.</p>
+    <p class="fineprint">By confirming, you agree to the trade terms: opening order minimum $200, lead time 3–5 business days, all prices USD. Your order will be emailed to Studio TROV on the next screen.</p>
   </div>
 </section>
 
