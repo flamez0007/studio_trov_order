@@ -272,12 +272,12 @@ form input[aria-invalid="true"]{border-color:#B91C1C}
   .invoice-title{text-align:right}
   .bank-details div{grid-template-columns:200px 1fr;gap:12px}
 }
-/* Print — clean invoice only: hide site chrome and action buttons */
+/* Print — clean order summary only: hide site chrome and action buttons */
 @media print{
   body{background:#fff}
-  .site-header,.site-footer,.floating-cart,.invoice-actions,.actions-row,.pay-options,.skip-link{display:none !important}
+  .site-header,.site-footer,.floating-cart,.actions-row,.skip-link{display:none !important}
   .view{padding:0}
-  #view-invoice{display:block !important}
-  .invoice-sheet{border:none;padding:0}
-  .summary-table,.invoice-sheet{font-size:12px}
+  #view-send{display:block !important}
+  #view-confirmation{display:block !important}
+  .summary-table{font-size:12px}
 }

@@ -1,14 +1,18 @@
 # Studio TROV — Wholesale Ordering Website
 
 Built from Flamez's hand-drawn mobile wireframe, made responsive for
-mobile, tablet and desktop. Payment is by bank transfer on invoice, or by card via Paystack
-(once switched on — see below). No Stripe.
+mobile, tablet and desktop. Payment is by bank transfer on invoice
+only — invoicing is the primary payment method. No Stripe, no Paystack
+(Paystack card payments were removed 2026-11-14 after the account
+would not accept USD: "currency is not supported by merchant").
 
-The invoice (and the bank details on it) only appears after a buyer
-fills in the order form and submits it. It is not shown on the shop,
-collection or piece pages, or anywhere else on the site. Bank details
-are in `app.js` only (the invoice rendering code) — they are NOT in
-this README.
+Flow: the buyer picks prints, fills in the order form, then one click
+sends the order straight to thestudiotrov@gmail.com (automatic, via
+FormSubmit — see below). Studio TROV then emails the invoice to the
+buyer straight away. The invoice is NOT shown on the site. Bank
+details are in `app.js` only (the order-email body, so the studio can
+copy them into the invoice) — they are NOT rendered on any page of
+the site, and NOT in this README.
 
 ## Preview it
 
@@ -45,25 +49,18 @@ fonts in `fonts/`).
   delivery region, opening-minimum progress ($200).
 - **Order details (checkout)** — buyer name, shop name, email, phone,
   delivery address, billing-same checkbox, delivery notes, how found.
-- **Invoice** — shown only after the order form is submitted.
-  Invoice number (TROV-YYYYMMDD-XXXX), invoice date, bill-to
-  details, line items, subtotal, delivery, TOTAL in USD, and
-  two payment choices:
-  1. Bank transfer (USD) with the Grey USD bank details and
-     the invoice number as payment reference.
-  2. Pay by card via Paystack (Paystack Inline, USD, amount =
-     total × 100, email = buyer's email, ref = invoice number).
-     NOT live yet — see "Paystack" below.
-  Actions: Print / Download invoice, Copy payment details,
-  Email this invoice to Studio TROV (mailto:
-  thestudiotrov@gmail.com), Copy order summary, and
-  "Done — I've sent the payment".
-- **Confirmation** — invoice number, full summary, "Email this
-  order to Studio TROV" (mailto: thestudiotrov@gmail.com) and
-  "Copy order summary", plus what happens next. If the buyer
-  paid by card, it shows the Paystack reference and says
-  Studio TROV will confirm it in the Paystack dashboard
-  before fulfilling. Payment is NOT verified automatically.
+- **Send order** — shown only after the order form is submitted.
+  Order number (TROV-YYYYMMDD-XXXX), order date, line items,
+  subtotal, delivery, TOTAL in USD, and delivery address.
+  One button — "Send order email to Studio TROV" — sends the order
+  automatically to thestudiotrov@gmail.com via FormSubmit. If the
+  automatic send fails, a mailto fallback ("Send from my email app")
+  appears. Also "Copy order summary" and "Back to details".
+- **Confirmation** — order number, full summary, "Copy order
+  summary", and what happens next: Studio TROV emails the invoice
+  straight away, the buyer pays by bank transfer using the order
+  number as the reference, then Studio TROV checks the payment and
+  fulfils. Payment is NOT verified automatically.
   Cart is saved in localStorage on the same device only.
 
 ## Facts used (exact, from the line sheet)
@@ -77,24 +74,30 @@ fonts in `fonts/`).
   blind / white-label dropshipping; fulfilled from New York via
   Creativehub. Contact: thestudiotrov@gmail.com.
 
-## Paystack (card payments — NOT live yet)
+## How the order email works (FormSubmit)
 
-Card payment is built in but switched off: `PAYSTACK_PUBLIC_KEY`
-in `app.js` is empty, so the Paystack button shows "coming soon,
-add public key", is disabled, and no payment is attempted.
-To switch it on, Flamez needs to:
-1. Create / sign in to Paystack (paystack.com).
-2. Copy the **public** key from Settings → API Keys & Webhooks.
-3. Tell Oscar — Oscar pastes it into `PAYSTACK_PUBLIC_KEY` in
-   `app.js` and redeploys. Never share a Paystack **secret** key.
+The site is static (GitHub Pages, no backend), so the automatic
+send uses FormSubmit: the site POSTs the order as JSON to
+`https://formsubmit.co/ajax/thestudiotrov@gmail.com`, and
+FormSubmit emails it to the studio inbox. The buyer also gets an
+automatic reply telling them their invoice is on its way.
+
+One-time setup: the first time a form posts to a new address,
+FormSubmit does NOT deliver the order — it emails an "Activate Form"
+link to thestudiotrov@gmail.com instead. Someone with access to
+that inbox must click **Activate Form** once. Until then, every
+order shows the buyer the mailto fallback instead, and FormSubmit
+keeps pre-activation submissions for 30 days and delivers them
+once the form is activated.
 
 ## Notes
 
-- Payment is by bank transfer on invoice, or by card via
-  Paystack (once switched on). There is no automatic payment
-  verification — Studio TROV checks the bank transfer, or the
-  card payment in the Paystack dashboard, before fulfilling.
-- The order is NOT sent automatically — the buyer sends it by email
-  (mailto button) or copies the summary.
+- Payment is by bank transfer on invoice only. There is no
+  automatic payment verification — Studio TROV checks the bank
+  transfer before fulfilling.
+- The order email to the studio includes the bank details to copy
+  into the invoice, plus an "ACTION FOR STUDIO TROV" line: email
+  the invoice to the buyer straight away, using the order number
+  as the invoice number and payment reference.
 - No account/login, no stock control, no tax calculation.
 - No third-party marketplaces anywhere on the site.

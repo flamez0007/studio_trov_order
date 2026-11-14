@@ -1,15 +1,19 @@
 /* Studio TROV — ordering website
-   Payment is by bank transfer on invoice. The invoice (and the bank
-   details on it) only appears after the buyer submits the order form.
-   Cart in localStorage (same device only). The order is sent by the
-   buyer via email, and Studio TROV checks the payment manually. */
+   Payment is by bank transfer on invoice (invoicing is the primary
+   payment method — card payments via Paystack were removed 2026-11-14).
+   Flow: shop → cart → order form → send order by email (one click,
+   sent automatically to thestudiotrov@gmail.com) → confirmation.
+   Studio TROV then emails the invoice to the buyer straight away;
+   the invoice is NOT shown on the site. Cart in localStorage
+   (same device only). Studio TROV checks the payment manually. */
 'use strict';
 
 const EMAIL = 'thestudiotrov@gmail.com';
-/* Bank details for the invoice ONLY. These appear in the invoice view
-   (rendered by renderInvoice) and in the emailed order body — nowhere
-   else on the site: not on the shop, collection or piece pages, not in
-   the header, footer or How ordering works text, and not in README. */
+/* Bank details — for the ORDER EMAIL to Studio TROV only, so the studio
+   can copy them straight into the invoice it emails the buyer. They are
+   NOT rendered anywhere on the site: not on the shop, collection or
+   piece pages, not in the header, footer or How ordering works text,
+   and not in README. */
 const BANK = {
   holder: 'Samuel Onovia Izoma',
   accountNumber: '213722800385',
@@ -19,10 +23,6 @@ const BANK = {
   wireRouting: '101019644',
   bankAddress: '1801 Main St., Kansas City, MO 64108'
 };
-/* Paystack card payments — LIVE.
-   Public key supplied by Flamez 2026-11-14. NEVER put a Paystack
-   secret key in this file (or anywhere on the site). */
-const PAYSTACK_PUBLIC_KEY = 'pk_live_8988b9967ebf89931e0f3941938aa965ec86413d';
 const MINIMUM = 200;
 const DELIVERY = { '19': { label: 'EU / USA / Canada', amount: 19 }, '49': { label: 'Rest of world', amount: 49 } };
 const SIZES = {
@@ -77,7 +77,7 @@ const cartSubtotal = () => cart.reduce((n, i) => n + i.qty * SIZES[i.size].price
 const findProduct = sku => PRODUCTS.find(p => p.sku === sku);
 
 /* ---------- views ---------- */
-const VIEWS = ['shop', 'collection', 'piece', 'cart', 'checkout', 'invoice', 'confirmation'];
+const VIEWS = ['shop', 'collection', 'piece', 'cart', 'checkout', 'send', 'confirmation'];
 let currentCollection = 'mod';
 let currentPiece = null;
 function showView(name, param) {
@@ -88,7 +88,7 @@ function showView(name, param) {
   floating.hidden = !(['shop', 'collection', 'piece'].includes(name) && cartCount() > 0);
   window.scrollTo({ top: 0 });
   if (name === 'cart') renderCart();
-  if (name === 'invoice') renderInvoice();
+  if (name === 'send') renderSend();
   if (name === 'confirmation') renderConfirmation();
   const navDrop = document.querySelector('.nav-collections');
   if (navDrop) navDrop.open = false;
@@ -279,7 +279,7 @@ function renderCart() {
 let orderData = null;
 let orderRef = '';
 let invoiceDate = '';
-let paystackPayment = null; // { reference, amount } once a card payment succeeds via Paystack
+let orderSent = false; // true once the order email has been sent to Studio TROV
 
 function paymentDetailsText() {
   return [
@@ -309,7 +309,7 @@ function orderSummaryHTML() {
 }
 
 function orderSummaryText() {
-  const lines = ['Studio TROV — Wholesale Order / INVOICE', 'Invoice number: ' + orderRef, 'Invoice date: ' + invoiceDate, ''];
+  const lines = ['Studio TROV — Wholesale Order', 'Order number: ' + orderRef, 'Order date: ' + invoiceDate, ''];
   cart.forEach(item => {
     const p = findProduct(item.sku); const size = SIZES[item.size];
     lines.push('- ' + p.sku + ' — ' + p.title + ' — ' + size.label + ' — Qty ' + item.qty + ' — ' + money(item.qty * size.price));
@@ -322,13 +322,9 @@ function orderSummaryText() {
     if (orderData.notes) lines.push('Delivery notes: ' + orderData.notes);
     if (orderData.source) lines.push('Found via: ' + orderData.source);
   }
-  lines.push('', paymentDetailsText(), '');
-  if (paystackPayment) {
-    lines.push('Card payment via Paystack: PAID — Paystack reference: ' + paystackPayment.reference + ' (Studio TROV to confirm in the Paystack dashboard before fulfilling).', '');
-  } else {
-    lines.push('Pay by bank transfer using the details above, with the invoice number as the payment reference — or pay by card via Paystack at the invoice step (if switched on).', '');
-  }
-  lines.push('Studio TROV will check the payment, then fulfil the order via Creativehub and email your tracking number. Payment is not verified automatically.',
+  lines.push('', 'Bank details to copy into the invoice (USD):', paymentDetailsText(), '');
+  lines.push('ACTION FOR STUDIO TROV: email the invoice to the buyer straight away, using the order number above as the invoice number and payment reference.',
+    'Studio TROV will check the payment, then fulfil the order via Creativehub and email the tracking number. Payment is not verified automatically.',
     'All works are unframed art prints. Lead time 3–5 business days. Fulfilled from New York via Creativehub.');
   return lines.join('\n');
 }
@@ -369,137 +365,120 @@ function initCheckout() {
     if (data.phone.replace(/\D/g, '').length < 7) { err.textContent = 'Please enter a valid phone number.'; err.hidden = false; form.elements.phone.setAttribute('aria-invalid', 'true'); return; }
     err.hidden = true;
     orderData = data;
-    // Invoice number + date are generated here, on submitting the order
-    // form — the invoice only exists from this point on.
+    // Order number + date are generated here, on submitting the order
+    // form — the order only exists from this point on. The buyer then
+    // reviews it and sends it by email; Studio TROV invoices from it.
     const d = new Date();
     const ymd = d.getFullYear() + String(d.getMonth() + 1).padStart(2, '0') + String(d.getDate()).padStart(2, '0');
     orderRef = 'TROV-' + ymd + '-' + Math.floor(1000 + Math.random() * 9000);
     invoiceDate = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-    showView('invoice');
+    orderSent = false;
+    showView('send');
   });
 }
 
-/* ---------- invoice (bank transfer) + confirmation ---------- */
-function renderInvoice() {
-  const sheet = document.getElementById('invoice-sheet');
-  let html = '<div class="invoice-sheet">' +
-    '<div class="invoice-head"><div><p class="footer-brand">Studio <strong>TROV</strong></p>' +
-    '<p class="muted">The architecture of quiet space.<br>thestudiotrov@gmail.com</p></div>' +
-    '<div class="invoice-title"><h2>INVOICE</h2>' +
-    '<p><strong>Invoice no:</strong> ' + orderRef + '<br><strong>Date:</strong> ' + invoiceDate + '</p></div></div>';
+/* ---------- send order by email + confirmation ----------
+   One click sends the order straight to thestudiotrov@gmail.com via
+   FormSubmit (a form-email service for static sites — no backend of
+   our own). The buyer never has to open an email app. If the automatic
+   send fails, the buyer can send it from their own email app instead
+   (mailto fallback). Studio TROV then emails the invoice straight
+   away — the invoice is not shown on this site. */
+const FORMSUBMIT_URL = 'https://formsubmit.co/ajax/' + EMAIL;
+
+function renderSend() {
+  const summary = document.getElementById('send-summary');
+  let html = '<p><strong>Order number: ' + orderRef + '</strong> &middot; ' + invoiceDate + '</p>' + orderSummaryHTML();
   if (orderData) {
-    html += '<div class="invoice-billto"><h3>Bill to</h3><p>' + orderData.fullName + ' — ' + orderData.shopName + '<br>' +
+    html += '<h2 style="margin-top:20px">Delivery to</h2><p>' + orderData.fullName + ' — ' + orderData.shopName + '<br>' +
       orderData.street + ', ' + orderData.city + ', ' + orderData.state + ' ' + orderData.postcode + ', ' + orderData.country +
       '<br>' + orderData.email + ' · ' + orderData.phone + '</p>';
-    if (!orderData.billingSame) html += '<p><strong>Billing:</strong> ' + orderData.billingStreet + ', ' + orderData.billingCity + ' ' + orderData.billingPostcode + ', ' + orderData.billingCountry + '</p>';
     if (orderData.notes) html += '<p><strong>Delivery notes:</strong> ' + orderData.notes + '</p>';
-    html += '</div>';
   }
-  html += '<h3>Items</h3>' + orderSummaryHTML() +
-    '<h3>Pay by bank transfer (USD)</h3>' +
-    '<p>Transfer the total above and use your invoice number as the payment reference.</p>' +
-    '<dl class="bank-details">' +
-    '<div><dt>Payment reference</dt><dd><strong>' + orderRef + '</strong></dd></div>' +
-    '<div><dt>Account holder</dt><dd>' + BANK.holder + '</dd></div>' +
-    '<div><dt>Account number</dt><dd>' + BANK.accountNumber + '</dd></div>' +
-    '<div><dt>Account type</dt><dd>' + BANK.accountType + '</dd></div>' +
-    '<div><dt>ACH routing</dt><dd>' + BANK.achRouting + '</dd></div>' +
-    '<div><dt>Bank name</dt><dd>' + BANK.bankName + '</dd></div>' +
-    '<div><dt>Wire routing</dt><dd>' + BANK.wireRouting + '</dd></div>' +
-    '<div><dt>Bank address</dt><dd>' + BANK.bankAddress + '</dd></div>' +
-    '</dl>' +
-    '<p class="fineprint">Studio TROV will check the payment, then fulfil your order via Creativehub and email your tracking number. Payment is not verified automatically. All works are unframed art prints. Lead time 3–5 business days. Fulfilled from New York via Creativehub.</p>' +
-    '</div>';
-  sheet.innerHTML = html;
-  const subject = encodeURIComponent('Studio TROV Invoice — ' + orderRef + ' — ' + (orderData ? orderData.shopName : ''));
+  summary.innerHTML = html;
+  const subject = encodeURIComponent('Studio TROV Wholesale Order — ' + orderRef + ' — ' + (orderData ? orderData.shopName : ''));
   const body = encodeURIComponent(orderSummaryText());
-  document.getElementById('email-invoice-btn').href = 'mailto:' + EMAIL + '?subject=' + subject + '&body=' + body;
-  document.getElementById('email-order-btn').href = 'mailto:' + EMAIL + '?subject=' + subject + '&body=' + body;
-  updatePaystackButton();
+  document.getElementById('send-mailto-btn').href = 'mailto:' + EMAIL + '?subject=' + subject + '&body=' + body;
+  const btn = document.getElementById('send-order-btn');
+  btn.disabled = false;
+  btn.textContent = orderSent ? 'Order sent ✓ — see confirmation' : 'Send order email to Studio TROV →';
+  document.getElementById('send-status').textContent = '';
+  document.getElementById('send-fallback').hidden = true;
 }
 
-/* ---------- Paystack card payments (public key required — see top of file) ---------- */
-let paystackScriptLoading = null;
-function ensurePaystackScript() {
-  if (typeof window !== 'undefined' && window.PaystackPop) return Promise.resolve(true);
-  if (paystackScriptLoading) return paystackScriptLoading;
-  paystackScriptLoading = new Promise(resolve => {
-    const s = document.createElement('script');
-    s.src = 'https://js.paystack.co/v1/inline.js';
-    s.onload = () => resolve(!!window.PaystackPop);
-    s.onerror = () => resolve(false);
-    document.head.appendChild(s);
-  });
-  return paystackScriptLoading;
-}
-function paystackTotalCents() {
-  return Math.round((cartSubtotal() + deliveryAmount()) * 100);
-}
-function updatePaystackButton() {
-  const btn = document.getElementById('paystack-btn');
-  const status = document.getElementById('paystack-status');
-  const desc = document.getElementById('paystack-desc');
-  if (!btn || !status) return;
-  const total = money(cartSubtotal() + deliveryAmount());
-  if (paystackPayment) {
-    btn.disabled = true;
-    btn.textContent = 'Paid by card via Paystack ✓ — ' + total;
-    status.textContent = 'Card payment received via Paystack. Paystack reference: ' + paystackPayment.reference + '. Studio TROV will confirm it in the Paystack dashboard before fulfilling.';
-    return;
-  }
-  if (!PAYSTACK_PUBLIC_KEY) {
-    btn.disabled = true;
-    btn.textContent = 'Pay by card via Paystack — coming soon, add public key';
-    status.textContent = 'Card payment is not switched on yet — the Paystack public key still needs to be added. Bank transfer above works now.';
-    if (desc) desc.textContent = 'Pay the invoice total (' + total + ') by card through Paystack.';
-    return;
-  }
-  btn.disabled = false;
-  btn.textContent = 'Pay ' + total + ' by card via Paystack';
-  status.textContent = 'You will be taken to Paystack to pay by card. If you cancel, you will come back here — your order is not lost, and bank transfer above still works.';
-  if (desc) desc.textContent = 'Pay the invoice total (' + total + ') by card through Paystack.';
-}
-function initPaystack() {
-  document.getElementById('paystack-btn').addEventListener('click', async () => {
-    const status = document.getElementById('paystack-status');
-    if (!PAYSTACK_PUBLIC_KEY) {
-      status.textContent = 'Card payment is not switched on yet — the Paystack public key still needs to be added. Bank transfer above works now.';
+async function sendOrderEmail() {
+  const status = document.getElementById('send-status');
+  const fallback = document.getElementById('send-fallback');
+  const btn = document.getElementById('send-order-btn');
+  if (!orderData || !orderRef) { status.textContent = 'Please complete the order form first.'; return; }
+  if (orderSent) { showView('confirmation'); return; }
+  btn.disabled = true;
+  btn.textContent = 'Sending your order…';
+  status.textContent = 'Sending your order to Studio TROV…';
+  fallback.hidden = true;
+  const payload = {
+    _subject: 'Studio TROV Wholesale Order — ' + orderRef + ' — ' + orderData.shopName,
+    _template: 'table',
+    _captcha: 'false',
+    _autoresponse: 'Thank you for your Studio TROV wholesale order ' + orderRef + '. We have received it and will email your invoice straight away — please check your inbox (and spam). Once you pay by bank transfer using your order number as the reference, we will fulfil your order and email your tracking number.',
+    email: orderData.email,
+    name: orderData.fullName,
+    'Order number': orderRef,
+    'Order date': invoiceDate,
+    'Shop': orderData.shopName,
+    'Buyer': orderData.fullName,
+    'Buyer email': orderData.email,
+    'Buyer phone': orderData.phone,
+    'Delivery address': orderData.street + ', ' + orderData.city + ', ' + orderData.state + ' ' + orderData.postcode + ', ' + orderData.country,
+    'Billing address': orderData.billingSame ? 'Same as delivery' : orderData.billingStreet + ', ' + orderData.billingCity + ' ' + orderData.billingPostcode + ', ' + orderData.billingCountry,
+    'Delivery notes': orderData.notes || '—',
+    'Found via': orderData.source || '—',
+    'Subtotal (USD)': money(cartSubtotal()),
+    'Delivery (USD)': money(deliveryAmount()),
+    'Total (USD)': money(cartSubtotal() + deliveryAmount()),
+    'Order details': orderSummaryText()
+  };
+  try {
+    const res = await fetch(FORMSUBMIT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    let data = {};
+    try { data = await res.json(); } catch (e) { data = {}; }
+    const ok = data && (data.success === true || data.success === 'true');
+    if (ok) {
+      orderSent = true;
+      showView('confirmation');
       return;
     }
-    if (!orderData || !orderRef) { status.textContent = 'Please complete the order form first.'; return; }
-    const ok = await ensurePaystackScript();
-    if (!ok || !window.PaystackPop) {
-      status.textContent = 'Paystack could not be loaded — please check your connection and try again, or pay by bank transfer above.';
-      return;
+    const msg = (data && data.message) ? String(data.message) : '';
+    if (/activat/i.test(msg)) {
+      status.textContent = 'Your order could not be sent automatically yet — Studio TROV still needs to activate the order form once (one click in the studio inbox). Please send it from your email app below instead — it goes to the same address, and your order number is ' + orderRef + '.';
+    } else {
+      status.textContent = 'Your order could not be sent automatically' + (msg ? ' — ' + msg : '') + '. Please send it from your email app below instead — it goes to the same address, and your order number is ' + orderRef + '.';
     }
-    const totalCents = paystackTotalCents();
-    try {
-      /* Paystack Inline v1 (js.paystack.co/v1/inline.js) — use setup().openIframe().
-         newTransaction() is the v2 API and does not exist in v1, which is why
-         the button previously did nothing. */
-      var handler = window.PaystackPop.setup({
-        key: PAYSTACK_PUBLIC_KEY,
-        email: orderData.email,
-        amount: totalCents,
-        currency: 'USD',
-        ref: orderRef,
-        metadata: { custom_fields: [
-          { display_name: 'Buyer', variable_name: 'buyer_name', value: orderData.fullName },
-          { display_name: 'Shop', variable_name: 'shop_name', value: orderData.shopName }
-        ]},
-        callback: function (response) {
-          paystackPayment = { reference: response.reference, amount: totalCents };
-          updatePaystackButton();
-          showView('confirmation');
-        },
-        onClose: function () {
-          status.textContent = 'Card payment was cancelled — your order is still here. You can pay by bank transfer above, or try card again.';
-        }
-      });
-      handler.openIframe();
-    } catch (e) {
-      if (typeof console !== 'undefined' && console.error) console.error('Paystack payment failed to start:', e);
-      status.textContent = 'Card payment could not be started — please try again, or pay by bank transfer above.';
+    fallback.hidden = false;
+    btn.disabled = false;
+    btn.textContent = 'Try sending again';
+  } catch (e) {
+    if (typeof console !== 'undefined' && console.error) console.error('Order email failed to send:', e);
+    status.textContent = 'Your order could not be sent automatically — please check your connection and try again, or send it from your email app below. Your order number is ' + orderRef + '.';
+    fallback.hidden = false;
+    btn.disabled = false;
+    btn.textContent = 'Try sending again';
+  }
+}
+
+function initSend() {
+  document.getElementById('send-order-btn').addEventListener('click', sendOrderEmail);
+  document.getElementById('copy-order-btn-send').addEventListener('click', async () => {
+    const status = document.getElementById('send-status');
+    try { await navigator.clipboard.writeText(orderSummaryText()); status.textContent = 'Order summary copied to clipboard.'; }
+    catch (e) {
+      const ta = document.createElement('textarea'); ta.value = orderSummaryText(); document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); status.textContent = 'Order summary copied to clipboard.'; } catch (e2) { status.textContent = 'Copy did not work in this browser — please use the send button instead.'; }
+      ta.remove();
     }
   });
 }
@@ -507,11 +486,7 @@ function initPaystack() {
 function renderConfirmation() {
   document.getElementById('order-ref').textContent = orderRef || '—';
   const note = document.getElementById('confirmation-payment-note');
-  if (paystackPayment) {
-    note.innerHTML = '<div class="notice notice-paid" role="status"><strong>Card payment received via Paystack.</strong><br>Paystack reference: <strong>' + paystackPayment.reference + '</strong><br>Studio TROV will confirm it in the Paystack dashboard before fulfilling your order — payment is not verified automatically.</div>';
-  } else {
-    note.innerHTML = '<div class="notice" role="note"><strong>Pay by bank transfer</strong> using the details on your invoice, with invoice number <strong>' + orderRef + '</strong> as the reference — or pay by card via Paystack at the invoice step. Studio TROV will check the payment, then fulfil your order via Creativehub and email your tracking number. Payment is not verified automatically.</div>';
-  }
+  note.innerHTML = '<div class="notice" role="note"><strong>Your order has been sent to Studio TROV.</strong><br>We will email your invoice straight away to <strong>' + (orderData ? orderData.email : '') + '</strong> — please check your inbox (and spam). Pay by bank transfer using your order number <strong>' + orderRef + '</strong> as the reference. Studio TROV will check the payment, then fulfil your order via Creativehub and email your tracking number. Payment is not verified automatically.</div>';
   let html = orderSummaryHTML();
   if (orderData) {
     html += '<h2 style="margin-top:20px">Delivery to</h2><p>' + orderData.fullName + ' — ' + orderData.shopName + '<br>' +
@@ -520,29 +495,6 @@ function renderConfirmation() {
     if (orderData.notes) html += '<p><strong>Delivery notes:</strong> ' + orderData.notes + '</p>';
   }
   document.getElementById('confirmation-summary').innerHTML = html;
-}
-
-function initInvoice() {
-  document.getElementById('print-invoice-btn').addEventListener('click', () => window.print());
-  document.getElementById('copy-payment-btn').addEventListener('click', async () => {
-    const status = document.getElementById('invoice-copy-status');
-    try { await navigator.clipboard.writeText(paymentDetailsText()); status.textContent = 'Payment details copied to clipboard.'; }
-    catch (e) {
-      const ta = document.createElement('textarea'); ta.value = paymentDetailsText(); document.body.appendChild(ta); ta.select();
-      try { document.execCommand('copy'); status.textContent = 'Payment details copied to clipboard.'; } catch (e2) { status.textContent = 'Copy did not work in this browser — please copy the details from the invoice instead.'; }
-      ta.remove();
-    }
-  });
-  document.getElementById('copy-order-btn-invoice').addEventListener('click', async () => {
-    const status = document.getElementById('invoice-copy-status');
-    try { await navigator.clipboard.writeText(orderSummaryText()); status.textContent = 'Order summary copied to clipboard.'; }
-    catch (e) {
-      const ta = document.createElement('textarea'); ta.value = orderSummaryText(); document.body.appendChild(ta); ta.select();
-      try { document.execCommand('copy'); status.textContent = 'Order summary copied to clipboard.'; } catch (e2) { status.textContent = 'Copy did not work in this browser — please use the email button instead.'; }
-      ta.remove();
-    }
-  });
-  document.getElementById('invoice-done-btn').addEventListener('click', () => showView('confirmation'));
 }
 
 function initConfirmation() {
@@ -555,10 +507,9 @@ function initConfirmation() {
       ta.remove();
     }
   });
-  document.getElementById('confirmation-print-btn').addEventListener('click', () => showView('invoice'));
   document.getElementById('new-order-btn').addEventListener('click', () => {
-    cart = []; orderData = null; orderRef = ''; invoiceDate = ''; paystackPayment = null; saveCart(); updateCartUI(); renderCart();
-    document.getElementById('invoice-sheet').innerHTML = '';
+    cart = []; orderData = null; orderRef = ''; invoiceDate = ''; orderSent = false; saveCart(); updateCartUI(); renderCart();
+    document.getElementById('send-summary').innerHTML = '';
     document.getElementById('confirmation-payment-note').innerHTML = '';
     document.getElementById('order-form').reset();
     showView('shop');
@@ -598,8 +549,7 @@ function initNav() {
 renderProducts();
 initNav();
 initCheckout();
-initInvoice();
-initPaystack();
+initSend();
 initConfirmation();
 renderCart();
 updateCartUI();
