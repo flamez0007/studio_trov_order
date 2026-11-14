@@ -19,13 +19,10 @@ const BANK = {
   wireRouting: '101019644',
   bankAddress: '1801 Main St., Kansas City, MO 64108'
 };
-/* Paystack card payments — NOT live yet.
-   Flamez has not supplied a Paystack public key. Paste your Paystack
-   public key here to switch card payments on. NEVER put a Paystack
-   secret key in this file (or anywhere on the site). While this is
-   empty, the Paystack button stays disabled with a "coming soon"
-   message and no payment is attempted. */
-const PAYSTACK_PUBLIC_KEY = '';
+/* Paystack card payments — LIVE.
+   Public key supplied by Flamez 2026-11-14. NEVER put a Paystack
+   secret key in this file (or anywhere on the site). */
+const PAYSTACK_PUBLIC_KEY = 'pk_live_8988b9967ebf89931e0f3941938aa965ec86413d';
 const MINIMUM = 200;
 const DELIVERY = { '19': { label: 'EU / USA / Canada', amount: 19 }, '49': { label: 'Rest of world', amount: 49 } };
 const SIZES = {
