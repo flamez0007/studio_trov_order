@@ -474,7 +474,10 @@ function initPaystack() {
     }
     const totalCents = paystackTotalCents();
     try {
-      window.PaystackPop.newTransaction({
+      /* Paystack Inline v1 (js.paystack.co/v1/inline.js) — use setup().openIframe().
+         newTransaction() is the v2 API and does not exist in v1, which is why
+         the button previously did nothing. */
+      var handler = window.PaystackPop.setup({
         key: PAYSTACK_PUBLIC_KEY,
         email: orderData.email,
         amount: totalCents,
@@ -484,8 +487,8 @@ function initPaystack() {
           { display_name: 'Buyer', variable_name: 'buyer_name', value: orderData.fullName },
           { display_name: 'Shop', variable_name: 'shop_name', value: orderData.shopName }
         ]},
-        onSuccess: function (transaction) {
-          paystackPayment = { reference: transaction.reference, amount: totalCents };
+        callback: function (response) {
+          paystackPayment = { reference: response.reference, amount: totalCents };
           updatePaystackButton();
           showView('confirmation');
         },
@@ -493,7 +496,9 @@ function initPaystack() {
           status.textContent = 'Card payment was cancelled — your order is still here. You can pay by bank transfer above, or try card again.';
         }
       });
+      handler.openIframe();
     } catch (e) {
+      if (typeof console !== 'undefined' && console.error) console.error('Paystack payment failed to start:', e);
       status.textContent = 'Card payment could not be started — please try again, or pay by bank transfer above.';
     }
   });
