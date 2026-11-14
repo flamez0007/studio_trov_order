@@ -411,8 +411,8 @@ function initPinBoxes(container) {
    (secret) key in this file. Until these are filled in, profiles
    save on the buyer's own device only and the cloud calls below
    simply do nothing. */
-const SUPABASE_URL = '';
-const SUPABASE_ANON_KEY = '';
+const SUPABASE_URL = 'https://hgphbcmwmlcjwnpdbaya.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhncGhiY213bWxjanducGRiYXlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ2ODgxNzQsImV4cCI6MjExMDI2NDE3NH0.bJPsMSi-g0PcoAYypoXhI9kTygidhv9VWbuNgjX8Bn8';
 function supabaseReady() { return !!SUPABASE_URL && !!SUPABASE_ANON_KEY; }
 async function saveProfileToCloud(profile) {
   if (!supabaseReady()) return false;
