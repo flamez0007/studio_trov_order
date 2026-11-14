@@ -449,6 +449,7 @@ async function sendOrderEmail() {
     const ok = data && (data.success === true || data.success === 'true');
     if (ok) {
       orderSent = true;
+      cart = []; saveCart(); updateCartUI(); renderCart();
       showView('confirmation');
       return;
     }
