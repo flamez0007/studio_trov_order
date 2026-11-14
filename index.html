@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Studio TROV — Wholesale Ordering</title>
+<meta name="description" content="Studio TROV wholesale ordering: museum-grade Giclée art prints, unframed, in Medium 12×16 in and Large 18×24 in. Order online, pay securely, fulfilled from New York.">
+<link rel="icon" href="assets/logo-header.png">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip-link" href="#shop">Skip to shop</a>
+
+<!-- ============ HEADER (wireframe: Studio Trov + email + cart) ============ -->
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="#shop" data-goto="shop" aria-label="Studio TROV — home">
+      <img src="assets/logo-header.png" alt="Studio TROV — The architecture of quiet space" class="brand-logo" onerror="this.style.display='none';document.getElementById('brand-fallback').style.display='inline'">
+      <span class="brand-fallback" id="brand-fallback">Studio <strong>TROV</strong></span>
+    </a>
+    <nav class="header-nav" aria-label="Main">
+      <a href="#collections" data-goto="shop" data-scroll="collections">Collections</a>
+      <details class="nav-collections">
+        <summary>Collection pages</summary>
+        <div class="nav-drop">
+          <a href="#collection-1" data-collection-view="mod">01 · Modernist Form</a>
+          <a href="#collection-2" data-collection-view="cya">02 · Archival Herbarium</a>
+          <a href="#collection-3" data-collection-view="erth">03 · Abstract Earth</a>
+        </div>
+      </details>
+      <a href="#how-it-works" data-goto="shop" data-scroll="how-it-works">How ordering works</a>
+      <a href="#trade" data-goto="shop" data-scroll="trade">Trade info</a>
+    </nav>
+    <div class="header-actions">
+      <a class="icon-btn" href="mailto:thestudiotrov@gmail.com" title="Reach us via email — thestudiotrov@gmail.com" aria-label="Reach us via email">
+        <span aria-hidden="true">✉</span><span class="icon-label">Email us</span>
+      </a>
+      <button class="icon-btn cart-btn" type="button" data-goto="cart" aria-label="View cart">
+        <span aria-hidden="true">🛒</span><span class="icon-label">Cart</span>
+        <span class="cart-count" id="cart-count" aria-live="polite">0</span>
+      </button>
+    </div>
+  </div>
+  <p class="draft-banner">DRAFT WEBSITE — for review only. No real payment is taken here yet.</p>
+</header>
+
+<main id="main">
+<!-- ============ SHOP VIEW ============ -->
+<section id="view-shop" class="view" aria-label="Shop">
+  <!-- Welcome / hero (wireframe: Welcome text left, image right) -->
+  <section class="hero container">
+    <div class="hero-text">
+      <p class="kicker">Wholesale ordering &middot; Open Collection &middot; 15 works</p>
+      <h1>Architectural art for considered spaces.</h1>
+      <p class="lead">Welcome to Studio TROV. We are an independent trade print studio producing museum-grade Gicl&eacute;e editions on Hahnem&uuml;hle German Etching 310gsm archival cotton rag — for interior spaces, boutique hospitality and independent retail.</p>
+      <p class="frameless"><strong>All works are sold as unframed art prints.</strong> Frames shown in photographs are for styling only and are not included.</p>
+      <p class="sizes-note">Standard frame sizes — Medium 12 &times; 16 in and Large 18 &times; 24 in. Buy a standard frame and the print fits right in.</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="#collections">Browse the collections</a>
+        <a class="btn btn-ghost" href="#how-it-works">How ordering works</a>
+      </div>
+    </div>
+    <figure class="hero-media">
+      <img src="assets/hero-mod01.jpg" alt="Monolith and Arch I, framed in light oak in a considered interior" width="1200" height="800">
+      <figcaption>Framed in light oak, styled in a considered interior. Frame for styling only.</figcaption>
+    </figure>
+  </section>
+
+  <!-- Trade strip -->
+  <section class="trade-strip" id="trade" aria-label="Trade terms at a glance">
+    <div class="container trade-grid">
+      <div><span class="trade-label">Wholesale</span><strong>$40 Medium &middot; $70 Large</strong><span class="trade-sub">MSRP $80 / $140</span></div>
+      <div><span class="trade-label">Opening order</span><strong>$150 minimum</strong><span class="trade-sub">Opening order $150–$200</span></div>
+      <div><span class="trade-label">Lead time</span><strong>3–5 business days</strong><span class="trade-sub">Fulfilled on demand</span></div>
+      <div><span class="trade-label">Delivery</span><strong>$19 EU, USA &amp; Canada</strong><span class="trade-sub">$49 rest of world</span></div>
+    </div>
+  </section>
+
+  <!-- Collections (wireframe: Collections, Collection 1/2/3 rows) -->
+  <section class="collections container" id="collections" aria-label="Collections">
+    <h2>Collections</h2>
+    <p class="section-intro">Five works in each collection. Pick a size, choose a quantity, and add to cart. All prices are wholesale, in USD.</p>
+
+    <section class="collection" id="collection-1" aria-labelledby="coll-1-title">
+      <div class="collection-head">
+        <p class="kicker">Collection 01 &middot; Five works</p>
+        <h3 id="coll-1-title">Modernist Form &amp; Structural Arches</h3>
+        <p>Arches, monoliths and quiet geometry — bold forms in warm, earthy colour, made to hold a room.</p>
+        <p><a href="#collection-1" class="view-collection-link" data-collection-view="mod">View Collection 1 →</a></p>
+      </div>
+      <div class="product-row" data-collection="mod"></div>
+    </section>
+
+    <section class="collection" id="collection-2" aria-labelledby="coll-2-title">
+      <div class="collection-head">
+        <p class="kicker">Collection 02 &middot; Five works</p>
+        <h3 id="coll-2-title">Archival Herbarium &amp; Botanical Cyanotypes</h3>
+        <p>Botanical cyanotypes in deep blue — ginkgo, fern, eucalyptus, grasses and olive, like herbarium plates.</p>
+        <p><a href="#collection-2" class="view-collection-link" data-collection-view="cya">View Collection 2 →</a></p>
+      </div>
+      <div class="product-row" data-collection="cya"></div>
+    </section>
+
+    <section class="collection" id="collection-3" aria-labelledby="coll-3-title">
+      <div class="collection-head">
+        <p class="kicker">Collection 03 &middot; Five works</p>
+        <h3 id="coll-3-title">Abstract Earth</h3>
+        <p>Handmade vessels and stone forms — terracotta, travertine and warm linen, painted in soft light.</p>
+        <p><a href="#collection-3" class="view-collection-link" data-collection-view="erth">View Collection 3 →</a></p>
+      </div>
+      <div class="product-row" data-collection="erth"></div>
+    </section>
+  </section>
+
+  <!-- How ordering works -->
+  <section class="how container" id="how-it-works" aria-labelledby="how-title">
+    <h2 id="how-title">How ordering works</h2>
+    <ol class="steps">
+      <li><strong>1. Pick your prints</strong><span>Choose a size and quantity for each work and add it to your cart. Opening order minimum $150.</span></li>
+      <li><strong>2. Tell us where to send them</strong><span>Your shop name, email, phone and delivery address — plus any delivery notes.</span></li>
+      <li><strong>3. Pay securely</strong><span>Payment is by Stripe secure checkout (to be connected — no real payment is taken in this draft).</span></li>
+      <li><strong>4. We fulfil &amp; send tracking</strong><span>Printed and dispatched from New York via Creativehub. We email your tracking number once it ships.</span></li>
+    </ol>
+    <p class="fineprint">Certificate of Authenticity included with every order. Blind / white-label dropshipping in rigid flat kraft mailers, plastic-free. All prices USD.</p>
+  </section>
+</section>
+
+<!-- ============ COLLECTION PAGE VIEW (dynamic) ============ -->
+<section id="view-collection" class="view" hidden aria-label="Collection page">
+  <div class="container" id="collection-page"></div>
+</section>
+
+<!-- ============ PIECE PAGE VIEW (dynamic) ============ -->
+<section id="view-piece" class="view" hidden aria-label="Piece page">
+  <div class="container" id="piece-page"></div>
+</section>
+
+<!-- ============ CART VIEW ============ -->
+<section id="view-cart" class="view" hidden aria-label="Cart">
+  <div class="container narrow">
+    <p class="kicker">Your order</p>
+    <h1>Cart</h1>
+    <div id="cart-empty" class="empty-state">
+      <p>Your cart is empty.</p>
+      <button class="btn btn-primary" type="button" data-goto="shop">Browse the collections</button>
+    </div>
+    <div id="cart-filled" hidden>
+      <ul class="cart-list" id="cart-list"></ul>
+      <div class="minimum" id="minimum-box">
+        <div class="minimum-bar" role="progressbar" aria-label="Progress to opening order minimum" aria-valuemin="0" aria-valuemax="150" aria-valuenow="0" id="minimum-bar"><span id="minimum-fill"></span></div>
+        <p id="minimum-text"></p>
+      </div>
+      <div class="totals">
+        <div class="totals-row"><span>Subtotal</span><strong id="cart-subtotal">$0</strong></div>
+        <div class="totals-row">
+          <label for="delivery-region">Delivery region</label>
+          <select id="delivery-region">
+            <option value="">Select a region…</option>
+            <option value="19">EU / USA / Canada — $19</option>
+            <option value="49">Rest of world — $49</option>
+          </select>
+        </div>
+        <div class="totals-row"><span>Delivery</span><strong id="cart-delivery">—</strong></div>
+        <div class="totals-row total"><span>Total</span><strong id="cart-total">$0</strong></div>
+      </div>
+      <p class="form-error" id="cart-error" role="alert" hidden></p>
+      <div class="actions-row">
+        <button class="btn btn-ghost" type="button" data-goto="shop">Continue shopping</button>
+        <button class="btn btn-primary" type="button" id="to-checkout">Proceed to order details →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CHECKOUT / ORDER FORM VIEW ============ -->
+<section id="view-checkout" class="view" hidden aria-label="Order details">
+  <div class="container narrow">
+    <p class="kicker">Step 2 of 3 &middot; Order details</p>
+    <h1>Your details</h1>
+    <p class="section-intro">We need these to fulfil and deliver your order, and to send your tracking number.</p>
+    <form id="order-form" novalidate>
+      <fieldset>
+        <legend>Buyer</legend>
+        <label>Full name *<input type="text" name="fullName" autocomplete="name" required></label>
+        <label>Business / shop name *<input type="text" name="shopName" autocomplete="organization" required></label>
+        <label>Email *<input type="email" name="email" autocomplete="email" required></label>
+        <label>Phone number *<input type="tel" name="phone" autocomplete="tel" required></label>
+      </fieldset>
+      <fieldset>
+        <legend>Delivery address</legend>
+        <label>Street address *<input type="text" name="street" autocomplete="address-line1" required></label>
+        <div class="form-grid-2">
+          <label>City *<input type="text" name="city" autocomplete="address-level2" required></label>
+          <label>State / province *<input type="text" name="state" autocomplete="address-level1" required></label>
+        </div>
+        <div class="form-grid-2">
+          <label>Postcode / ZIP *<input type="text" name="postcode" autocomplete="postal-code" required></label>
+          <label>Country *<input type="text" name="country" autocomplete="country-name" required></label>
+        </div>
+        <label class="checkbox"><input type="checkbox" name="billingSame" checked> Billing address is the same as delivery address</label>
+        <div id="billing-fields" hidden>
+          <label>Billing street address *<input type="text" name="billingStreet" autocomplete="billing address-line1"></label>
+          <div class="form-grid-2">
+            <label>Billing city *<input type="text" name="billingCity"></label>
+            <label>Billing postcode / ZIP *<input type="text" name="billingPostcode"></label>
+          </div>
+          <label>Billing country *<input type="text" name="billingCountry"></label>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Anything else?</legend>
+        <label>Delivery notes <span class="optional">(optional)</span><textarea name="notes" rows="3" placeholder="e.g. Deliver to the back door, leave with reception…"></textarea></label>
+        <label>How did you find Studio TROV? <span class="optional">(optional)</span>
+          <select name="source">
+            <option value="">Select…</option>
+            <option>Line sheet</option>
+            <option>Instagram / social media</option>
+            <option>Search / web</option>
+            <option>Recommendation</option>
+            <option>Trade show / event</option>
+            <option>Other</option>
+          </select>
+        </label>
+      </fieldset>
+      <p class="form-error" id="form-error" role="alert" hidden></p>
+      <div class="actions-row">
+        <button class="btn btn-ghost" type="button" data-goto="cart">← Back to cart</button>
+        <button class="btn btn-primary" type="submit">Continue to payment →</button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<!-- ============ PAYMENT VIEW ============ -->
+<section id="view-payment" class="view" hidden aria-label="Payment">
+  <div class="container narrow">
+    <p class="kicker">Step 3 of 3 &middot; Payment</p>
+    <h1>Payment</h1>
+    <div class="notice notice-draft" role="note">
+      <strong>Draft — Stripe is not connected yet.</strong>
+      No real payment will be taken in this draft, and no card details are collected or stored here. Once Stripe is connected, this step will take you to secure Stripe checkout to pay.
+    </div>
+    <h2>Order summary</h2>
+    <div id="payment-summary"></div>
+    <fieldset class="payment-methods">
+      <legend>Payment method</legend>
+      <label class="radio-card"><input type="radio" name="payMethod" value="stripe" checked> <strong>Stripe — secure card checkout</strong><span>Pay by card via Stripe. You will be taken to Stripe's secure checkout once it is connected.</span></label>
+    </fieldset>
+    <div class="actions-row">
+      <button class="btn btn-ghost" type="button" data-goto="checkout">← Back to details</button>
+      <button class="btn btn-primary" type="button" id="confirm-pay">Confirm order — draft payment</button>
+    </div>
+    <p class="fineprint">By confirming, you agree to the trade terms: opening order minimum $150, lead time 3–5 business days, all prices USD. Your order will be emailed to Studio TROV on the next screen.</p>
+  </div>
+</section>
+
+<!-- ============ CONFIRMATION VIEW ============ -->
+<section id="view-confirmation" class="view" hidden aria-label="Order confirmation">
+  <div class="container narrow">
+    <p class="kicker">Order received — draft</p>
+    <h1>Thank you — your order is ready to send</h1>
+    <p class="lead">Your order reference is <strong id="order-ref">—</strong>. This is a draft: no payment has been taken and no order has been sent yet. Use the buttons below to send it to Studio TROV.</p>
+    <div id="confirmation-summary"></div>
+    <div class="actions-row wrap">
+      <a class="btn btn-primary" id="email-order-btn" href="mailto:thestudiotrov@gmail.com">Email this order to Studio TROV</a>
+      <button class="btn btn-ghost" type="button" id="copy-order-btn">Copy order summary</button>
+      <button class="btn btn-ghost" type="button" id="new-order-btn">Start a new order</button>
+    </div>
+    <p class="fineprint" id="copy-status" role="status"></p>
+    <h2>What happens next</h2>
+    <ol class="steps">
+      <li><strong>1. You email the order</strong><span>It goes straight to thestudiotrov@gmail.com, with your order reference in the subject.</span></li>
+      <li><strong>2. Studio TROV confirms &amp; takes payment</strong><span>Once Stripe is connected, payment will be taken securely at this stage instead.</span></li>
+      <li><strong>3. We fulfil &amp; send tracking</strong><span>Printed and dispatched from New York via Creativehub. Your tracking number is emailed to you once it ships, usually within 24–48 hours of dispatch.</span></li>
+    </ol>
+  </div>
+</section>
+</main>
+
+<!-- ============ FLOATING GO TO CART (wireframe) ============ -->
+<div class="floating-cart" id="floating-cart" hidden>
+  <div class="container floating-inner">
+    <span id="floating-text">0 items · $0</span>
+    <button class="btn btn-primary" type="button" data-goto="cart">Go to Cart →</button>
+  </div>
+</div>
+
+<!-- ============ FOOTER (wireframe) ============ -->
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div>
+      <p class="footer-brand">Studio <strong>TROV</strong></p>
+      <p>The architecture of quiet space.</p>
+      <p>Architectural art for considered spaces.</p>
+    </div>
+    <div>
+      <p class="footer-label">Contact</p>
+      <p><a href="mailto:thestudiotrov@gmail.com">thestudiotrov@gmail.com</a></p>
+      <p>Lead time 3–5 business days.</p>
+    </div>
+    <div>
+      <p class="footer-label">Trade</p>
+      <p>Certificate of Authenticity included.</p>
+      <p>Blind / white-label dropshipping, plastic-free.</p>
+      <p>Fulfilled on demand from New York via Creativehub.</p>
+      <p>All works are unframed art prints — standard frame sizes.</p>
+    </div>
+  </div>
+  <p class="footer-base">© Studio TROV — Wholesale ordering, draft website for review.</p>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
