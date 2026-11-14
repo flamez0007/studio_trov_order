@@ -304,9 +304,14 @@ form input[aria-invalid="true"]{border-color:#B91C1C}
 /* ---------- Returning customer (saved details) ---------- */
 .returning{border:1px solid var(--hair);border-radius:var(--radius);padding:14px 16px;margin:0 0 18px;background:#fff}
 .returning p{margin:0 0 10px}
-.returning-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-.returning-row label{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
-.returning-row input{flex:1 1 200px}
+.returning-ask{text-align:center}
+.returning-ask p{margin:0 0 12px;font-size:1.05rem}
+.returning-ask-row{justify-content:center}
+.returning-form label{display:block;font-weight:600;margin:0 0 6px}
+.returning-form .nice-input{width:100%;margin:0 0 14px}
+.returning-form .pin-label{display:block;font-weight:600;text-align:center;margin:0 0 8px}
+.returning-form .pin-boxes{margin:0 0 16px}
+.returning-form .actions-row{justify-content:center}
 .returning-note{font-size:.9rem;color:var(--navy);min-height:1.2em}
 .saved-note{font-size:.9rem;color:var(--navy);background:#fff;border:1px solid var(--hair);border-radius:var(--radius);padding:10px 14px}
 .link-btn{background:none;border:none;color:var(--navy);text-decoration:underline;cursor:pointer;padding:0;font:inherit}
@@ -323,11 +328,12 @@ form input[aria-invalid="true"]{border-color:#B91C1C}
 .nice-input{padding:12px 16px;border:1.5px solid var(--hair);border-radius:14px;font:inherit;background:#fff;transition:border-color .15s,box-shadow .15s}
 .nice-input:focus{outline:none;border-color:var(--navy);box-shadow:0 0 0 3px rgba(26,47,69,.14)}
 .pin-boxes{display:flex;gap:10px}
+.pin-boxes-center{justify-content:center}
 .pin-boxes input{width:52px;height:56px;padding:0;text-align:center;font-size:1.4rem;font-weight:600;border:1.5px solid var(--hair);border-radius:14px;background:#fff;transition:border-color .15s,box-shadow .15s}
 .pin-boxes input:focus{outline:none;border-color:var(--navy);box-shadow:0 0 0 3px rgba(26,47,69,.14)}
 .popup-panel-small .pin-boxes input{display:inline-block;width:52px;margin-top:0}
-.returning-row .pin-boxes{flex:0 0 auto}
-.returning-row .pin-boxes input{flex:0 0 auto;width:44px;height:48px;font-size:1.2rem;border-radius:12px}
+.returning-form .pin-boxes{flex:0 0 auto}
+.returning-form .pin-boxes input{flex:0 0 auto;width:44px;height:48px;font-size:1.2rem;border-radius:12px}
 @media (min-width:700px){
   .popup-panel-small{left:50%;right:auto;transform:translate(-50%,-50%);width:min(480px,94vw)}
 }

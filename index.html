@@ -168,21 +168,30 @@
     <h1>Your details</h1>
     <p class="section-intro">We need these to fulfil and deliver your order, and to send your tracking number.</p>
     <div class="returning" id="returning-box">
-      <p><strong>Returning customer?</strong> Enter the email and PIN you saved with and we'll fill in your details.</p>
-      <div class="returning-row">
+      <div class="returning-ask" id="returning-ask">
+        <p><strong>Returning customer?</strong></p>
+        <div class="actions-row returning-ask-row">
+          <button class="btn btn-primary" type="button" id="returning-yes">Yes</button>
+          <button class="btn btn-ghost" type="button" id="returning-no">No</button>
+        </div>
+      </div>
+      <div class="returning-form" id="returning-form" hidden>
+        <p>Enter the email and PIN you saved with and we'll fill in your details.</p>
         <label for="returning-email">Email you ordered with</label>
         <input type="email" id="returning-email" class="nice-input" placeholder="you@yourshop.com" autocomplete="email">
-        <label for="returning-pin">Your 4-digit PIN</label>
-        <span class="pin-boxes pin-boxes-small" id="returning-pin-boxes" role="group" aria-label="Your 4-digit PIN">
+        <span class="pin-label">Your 4-digit PIN</span>
+        <span class="pin-boxes pin-boxes-small pin-boxes-center" id="returning-pin-boxes" role="group" aria-label="Your 4-digit PIN">
           <input type="password" id="returning-pin" inputmode="numeric" pattern="[0-9]" maxlength="1" aria-label="PIN digit 1">
           <input type="password" inputmode="numeric" pattern="[0-9]" maxlength="1" aria-label="PIN digit 2">
           <input type="password" inputmode="numeric" pattern="[0-9]" maxlength="1" aria-label="PIN digit 3">
           <input type="password" inputmode="numeric" pattern="[0-9]" maxlength="1" aria-label="PIN digit 4">
         </span>
-        <button class="btn btn-ghost" type="button" id="returning-load">Load my details</button>
+        <div class="actions-row">
+          <button class="btn btn-primary" type="button" id="returning-load">Load my details</button>
+        </div>
+        <p class="returning-note" id="returning-note" aria-live="polite"></p>
+        <p class="fineprint">Your details are saved only on this device, in your browser — nothing is stored on our site. <button class="link-btn" type="button" id="returning-clear">Clear my saved details</button></p>
       </div>
-      <p class="returning-note" id="returning-note" aria-live="polite"></p>
-      <p class="fineprint">Your details are saved only on this device, in your browser — nothing is stored on our site. <button class="link-btn" type="button" id="returning-clear">Clear my saved details</button></p>
     </div>
     <p class="saved-note" id="saved-note" hidden>Your saved details are filled in — change anything you need, and we'll remember the changes for next time.</p>
     <form id="order-form" novalidate>
@@ -366,6 +375,6 @@
   </div>
 </footer>
 
-<script src="app.js?v=20261114d"></script>
+<script src="app.js?v=20261114e"></script>
 </body>
 </html>

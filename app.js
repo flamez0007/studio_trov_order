@@ -453,6 +453,17 @@ function initSavedDetails() {
   // Any change is saved again automatically.
   form.addEventListener('input', saveDetailsFromForm);
   form.addEventListener('change', saveDetailsFromForm);
+  // Returning customer? Yes shows the email + PIN form; No hides the box completely.
+  document.getElementById('returning-yes').addEventListener('click', () => {
+    document.getElementById('returning-ask').hidden = true;
+    document.getElementById('returning-form').hidden = false;
+    const saved = readSavedDetails();
+    if (saved && saved.email) document.getElementById('returning-email').value = saved.email;
+    document.getElementById('returning-email').focus();
+  });
+  document.getElementById('returning-no').addEventListener('click', () => {
+    document.getElementById('returning-box').hidden = true;
+  });
   // Returning customer lookup: enter the email + PIN you saved with.
   document.getElementById('returning-load').addEventListener('click', async () => {
     const note = document.getElementById('returning-note');
@@ -487,10 +498,9 @@ function initSavedDetails() {
     clearPinBoxes(document.getElementById('returning-pin-boxes'));
     document.getElementById('returning-note').textContent = 'Saved details cleared.';
     document.getElementById('saved-note').hidden = true;
+    document.getElementById('returning-form').hidden = true;
+    document.getElementById('returning-ask').hidden = false;
   });
-  // If details are already saved on this device, fill the form in.
-  const saved = readSavedDetails();
-  if (saved && saved.email) { fillFormDetails(saved); document.getElementById('saved-note').hidden = false; }
   initPinBoxes(document.getElementById('returning-pin-boxes'));
 }
 
