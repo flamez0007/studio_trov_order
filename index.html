@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Studio TROV — Wholesale Ordering</title>
-<meta name="description" content="Studio TROV wholesale ordering: museum-grade Giclée art prints, unframed, in Medium 12×16 in and Large 18×24 in. Order online, pay securely, fulfilled from New York.">
+<meta name="description" content="Studio TROV wholesale ordering: museum-grade Giclée art prints, unframed, in Medium 12×16 in and Large 18×24 in. Order online and pay by bank transfer on invoice or by card via Paystack, fulfilled from New York.">
 <link rel="icon" href="assets/logo-header.png">
 <link rel="stylesheet" href="styles.css">
 </head>
@@ -41,7 +41,7 @@
       </button>
     </div>
   </div>
-  <p class="draft-banner">DRAFT WEBSITE — for review only. No real payment is taken here yet.</p>
+  <p class="draft-banner">Wholesale ordering — pay by bank transfer on invoice, or by card via Paystack.</p>
 </header>
 
 <main id="main">
@@ -114,7 +114,7 @@
     <ol class="steps">
       <li><strong>1. Pick your prints</strong><span>Choose a size and quantity for each work and add it to your cart. Opening order minimum $200.</span></li>
       <li><strong>2. Tell us where to send them</strong><span>Your shop name, email, phone and delivery address — plus any delivery notes.</span></li>
-      <li><strong>3. Pay securely</strong><span>Payment is by Stripe secure checkout (to be connected — no real payment is taken in this draft).</span></li>
+      <li><strong>3. Pay — bank transfer or card</strong><span>We generate your invoice: pay by bank transfer with our USD bank details, using your order number as the reference, or pay by card via Paystack at the invoice step.</span></li>
       <li><strong>4. We fulfil &amp; send tracking</strong><span>Printed and dispatched from New York via Creativehub. We email your tracking number once it ships.</span></li>
     </ol>
     <p class="fineprint">Certificate of Authenticity included with every order. Blind / white-label dropshipping in rigid flat kraft mailers, plastic-free. All prices USD.</p>
@@ -222,53 +222,71 @@
       <p class="form-error" id="form-error" role="alert" hidden></p>
       <div class="actions-row">
         <button class="btn btn-ghost" type="button" data-goto="cart">← Back to cart</button>
-        <button class="btn btn-primary" type="submit">Continue to payment →</button>
+        <button class="btn btn-primary" type="submit">Generate my invoice →</button>
       </div>
     </form>
   </div>
 </section>
 
-<!-- ============ PAYMENT VIEW ============ -->
-<section id="view-payment" class="view" hidden aria-label="Payment">
+<!-- ============ INVOICE VIEW ============ -->
+<!-- The invoice (and the bank details on it) only appears here, after the
+     buyer has filled in the order form and submitted it. It is not shown
+     on the shop, collection or piece pages, or anywhere else on the site. -->
+<section id="view-invoice" class="view" hidden aria-label="Your invoice">
   <div class="container narrow">
-    <p class="kicker">Step 3 of 3 &middot; Payment</p>
-    <h1>Payment</h1>
-    <div class="notice notice-draft" role="note">
-      <strong>Draft — Stripe is not connected yet.</strong>
-      No real payment will be taken in this draft, and no card details are collected or stored here. Once Stripe is connected, this step will take you to secure Stripe checkout to pay.
-    </div>
-    <h2>Order summary</h2>
-    <div id="payment-summary"></div>
-    <fieldset class="payment-methods">
-      <legend>Payment method</legend>
-      <label class="radio-card"><input type="radio" name="payMethod" value="stripe" checked> <strong>Stripe — secure card checkout</strong><span>Pay by card via Stripe. You will be taken to Stripe's secure checkout once it is connected.</span></label>
-    </fieldset>
-    <div class="actions-row">
+    <p class="kicker">Step 3 of 3 &middot; Your invoice</p>
+    <h1>Your invoice</h1>
+    <p class="section-intro">Pay by bank transfer using the details on this invoice. Use your invoice number as the payment reference.</p>
+    <div id="invoice-sheet" aria-live="polite"></div>
+    <section class="pay-options" aria-label="Choose how to pay">
+      <h2>Choose how to pay</h2>
+      <div class="pay-option">
+        <p><strong>Option 1 — Bank transfer (USD)</strong></p>
+        <p>Use the invoice above: transfer the total to the USD bank details shown, with your invoice number as the reference.</p>
+      </div>
+      <div class="pay-option">
+        <p><strong>Option 2 — Pay by card via Paystack</strong></p>
+        <p id="paystack-desc">Pay the invoice total by card through Paystack.</p>
+        <button class="btn btn-primary" type="button" id="paystack-btn" disabled>Pay by card via Paystack — coming soon, add public key</button>
+        <p class="fineprint" id="paystack-status" role="status">Card payment is not switched on yet — the Paystack public key still needs to be added. Bank transfer above works now.</p>
+        <p class="fineprint">Card payments are checked in the Paystack dashboard and Studio TROV confirms before fulfilling — payment is not verified automatically.</p>
+      </div>
+    </section>
+    <div class="actions-row wrap invoice-actions">
+      <button class="btn btn-primary" type="button" id="print-invoice-btn">Print / Download invoice</button>
+      <button class="btn btn-ghost" type="button" id="copy-payment-btn">Copy payment details</button>
+      <a class="btn btn-primary" id="email-invoice-btn" href="mailto:thestudiotrov@gmail.com">Email this invoice to Studio TROV</a>
+      <button class="btn btn-ghost" type="button" id="copy-order-btn-invoice">Copy order summary</button>
       <button class="btn btn-ghost" type="button" data-goto="checkout">← Back to details</button>
-      <button class="btn btn-primary" type="button" id="confirm-pay">Confirm order — draft payment</button>
     </div>
-    <p class="fineprint">By confirming, you agree to the trade terms: opening order minimum $200, lead time 3–5 business days, all prices USD. Your order will be emailed to Studio TROV on the next screen.</p>
+    <p class="fineprint" id="invoice-copy-status" role="status"></p>
+    <div class="actions-row">
+      <button class="btn btn-primary" type="button" id="invoice-done-btn">Done — I've sent the payment →</button>
+    </div>
+    <p class="fineprint">By confirming, you agree to the trade terms: opening order minimum $200, lead time 3–5 business days, all prices USD. Payment is by bank transfer or by card via Paystack — Studio TROV checks the payment before fulfilling your order. No payment is verified automatically.</p>
   </div>
 </section>
 
 <!-- ============ CONFIRMATION VIEW ============ -->
 <section id="view-confirmation" class="view" hidden aria-label="Order confirmation">
   <div class="container narrow">
-    <p class="kicker">Order received — draft</p>
-    <h1>Thank you — your order is ready to send</h1>
-    <p class="lead">Your order reference is <strong id="order-ref">—</strong>. This is a draft: no payment has been taken and no order has been sent yet. Use the buttons below to send it to Studio TROV.</p>
+    <p class="kicker">Invoice ready</p>
+    <h1>Thank you — your invoice is ready</h1>
+    <p class="lead">Your invoice number is <strong id="order-ref">—</strong>. Use the buttons below to send your invoice to Studio TROV.</p>
+    <div id="confirmation-payment-note" aria-live="polite"></div>
     <div id="confirmation-summary"></div>
     <div class="actions-row wrap">
       <a class="btn btn-primary" id="email-order-btn" href="mailto:thestudiotrov@gmail.com">Email this order to Studio TROV</a>
       <button class="btn btn-ghost" type="button" id="copy-order-btn">Copy order summary</button>
+      <button class="btn btn-ghost" type="button" id="confirmation-print-btn">Back to invoice — print / download</button>
       <button class="btn btn-ghost" type="button" id="new-order-btn">Start a new order</button>
     </div>
     <p class="fineprint" id="copy-status" role="status"></p>
     <h2>What happens next</h2>
     <ol class="steps">
-      <li><strong>1. You email the order</strong><span>It goes straight to thestudiotrov@gmail.com, with your order reference in the subject.</span></li>
-      <li><strong>2. Studio TROV confirms &amp; takes payment</strong><span>Once Stripe is connected, payment will be taken securely at this stage instead.</span></li>
-      <li><strong>3. We fulfil &amp; send tracking</strong><span>Printed and dispatched from New York via Creativehub. Your tracking number is emailed to you once it ships, usually within 24–48 hours of dispatch.</span></li>
+      <li><strong>1. You pay by bank transfer</strong><span>Transfer the invoice total to the USD bank details on your invoice, using your invoice number as the reference.</span></li>
+      <li><strong>2. You email the invoice</strong><span>It goes straight to thestudiotrov@gmail.com, with your invoice number in the subject.</span></li>
+      <li><strong>3. Studio TROV checks the payment &amp; fulfils</strong><span>Once your transfer is confirmed, your order is printed and dispatched from New York via Creativehub. Your tracking number is emailed to you once it ships, usually within 24–48 hours of dispatch.</span></li>
     </ol>
   </div>
 </section>
@@ -303,7 +321,7 @@
       <p>All works are unframed art prints — standard frame sizes.</p>
     </div>
   </div>
-  <p class="footer-base">© Studio TROV — Wholesale ordering, draft website for review.</p>
+  <p class="footer-base">© Studio TROV — Wholesale ordering. Pay by bank transfer on invoice, or by card via Paystack.</p>
 </footer>
 
 <script src="app.js"></script>

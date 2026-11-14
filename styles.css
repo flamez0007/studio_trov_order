@@ -1,7 +1,8 @@
-/* Studio TROV — ordering website (draft)
+/* Studio TROV — ordering website
    Mobile-first, responsive: 1 column / horizontal-scroll rows on mobile,
    2 columns tablet, 3 columns desktop. Navy #1A2F45, off-white #F8F6F0,
-   terracotta #B4552D. Playfair Display headings, Montserrat body. */
+   terracotta #B4552D. Playfair Display headings, Montserrat body.
+   Payment is by bank transfer on invoice — no card checkout. */
 @font-face{font-family:'Playfair Display';font-style:normal;font-weight:400;font-display:swap;src:url(fonts/PlayfairDisplay-Regular.ttf) format('truetype')}
 @font-face{font-family:'Playfair Display';font-style:italic;font-weight:400;font-display:swap;src:url(fonts/PlayfairDisplay-Italic.ttf) format('truetype')}
 @font-face{font-family:'Playfair Display';font-style:normal;font-weight:700;font-display:swap;src:url(fonts/PlayfairDisplay-Bold.ttf) format('truetype')}
@@ -241,4 +242,42 @@ form input[aria-invalid="true"]{border-color:#B91C1C}
 }
 @media (min-width:1024px){
   .collection-page-grid{grid-template-columns:repeat(3,1fr)}
+}
+
+/* ---- Invoice (bank transfer) — only shown after the order form is submitted ---- */
+.invoice-sheet{background:#fff;border:1px solid var(--hair);border-radius:var(--radius);padding:18px;margin-bottom:18px}
+.invoice-head{display:flex;flex-direction:column;gap:8px;justify-content:space-between;border-bottom:2px solid var(--navy);padding-bottom:12px;margin-bottom:16px}
+.invoice-head .footer-brand{font-size:1.5rem}
+.invoice-head .muted{font-size:.85rem;color:var(--grey);margin:0}
+.invoice-title h2{margin:0;font-size:1.6rem}
+.invoice-title p{margin:6px 0 0;font-size:.92rem}
+.invoice-billto{margin-bottom:16px}
+.invoice-billto h3,.invoice-sheet h3{font-size:1.1rem;margin:0 0 8px}
+.bank-details{margin:0 0 14px;display:grid;gap:0}
+.bank-details div{display:grid;grid-template-columns:1fr;gap:2px;padding:9px 0;border-top:1px solid var(--hair);font-size:.92rem}
+.bank-details div:last-child{border-bottom:1px solid var(--hair)}
+.bank-details dt{color:var(--grey);font-size:.82rem;font-weight:600}
+.bank-details dd{margin:0;color:var(--navy);overflow-wrap:break-word}
+.invoice-actions{margin-bottom:14px}
+/* Pay options — invoice step only */
+.pay-options{margin-bottom:18px}
+.pay-options h2{font-size:1.4rem}
+.pay-option{background:#fff;border:1px solid var(--hair);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.pay-option p{margin-bottom:.6em}
+.pay-option p:last-child{margin-bottom:0}
+.notice{background:#FFF4E5;border:1px solid #E8C48A;border-radius:var(--radius);padding:14px 16px;margin-bottom:16px}
+.notice-paid{background:#EAF7EE;border-color:#9AC7A8;color:#14532D}
+@media (min-width:700px){
+  .invoice-head{flex-direction:row;align-items:flex-start}
+  .invoice-title{text-align:right}
+  .bank-details div{grid-template-columns:200px 1fr;gap:12px}
+}
+/* Print — clean invoice only: hide site chrome and action buttons */
+@media print{
+  body{background:#fff}
+  .site-header,.site-footer,.floating-cart,.invoice-actions,.actions-row,.pay-options,.skip-link{display:none !important}
+  .view{padding:0}
+  #view-invoice{display:block !important}
+  .invoice-sheet{border:none;padding:0}
+  .summary-table,.invoice-sheet{font-size:12px}
 }

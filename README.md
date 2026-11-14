@@ -1,8 +1,14 @@
-# Studio TROV — Wholesale Ordering Website (DRAFT)
+# Studio TROV — Wholesale Ordering Website
 
-First draft for Flamez to review. No real payments.
 Built from Flamez's hand-drawn mobile wireframe, made responsive for
-mobile, tablet and desktop.
+mobile, tablet and desktop. Payment is by bank transfer on invoice, or by card via Paystack
+(once switched on — see below). No Stripe.
+
+The invoice (and the bank details on it) only appears after a buyer
+fills in the order form and submits it. It is not shown on the shop,
+collection or piece pages, or anywhere else on the site. Bank details
+are in `app.js` only (the invoice rendering code) — they are NOT in
+this README.
 
 ## Preview it
 
@@ -39,13 +45,26 @@ fonts in `fonts/`).
   delivery region, opening-minimum progress ($200).
 - **Order details (checkout)** — buyer name, shop name, email, phone,
   delivery address, billing-same checkbox, delivery notes, how found.
-- **Payment** — order summary + Stripe, clearly marked DRAFT:
-  Stripe is not connected yet, no card details are collected.
-  The "Confirm order" button is a simulated step.
-- **Confirmation** — order reference (TROV-YYYYMMDD-XXXX), full
-  summary, "Email this order to Studio TROV" (mailto:
-  thestudiotrov@gmail.com) and "Copy order summary". Cart is saved
-  in localStorage on the same device (draft only).
+- **Invoice** — shown only after the order form is submitted.
+  Invoice number (TROV-YYYYMMDD-XXXX), invoice date, bill-to
+  details, line items, subtotal, delivery, TOTAL in USD, and
+  two payment choices:
+  1. Bank transfer (USD) with the Grey USD bank details and
+     the invoice number as payment reference.
+  2. Pay by card via Paystack (Paystack Inline, USD, amount =
+     total × 100, email = buyer's email, ref = invoice number).
+     NOT live yet — see "Paystack" below.
+  Actions: Print / Download invoice, Copy payment details,
+  Email this invoice to Studio TROV (mailto:
+  thestudiotrov@gmail.com), Copy order summary, and
+  "Done — I've sent the payment".
+- **Confirmation** — invoice number, full summary, "Email this
+  order to Studio TROV" (mailto: thestudiotrov@gmail.com) and
+  "Copy order summary", plus what happens next. If the buyer
+  paid by card, it shows the Paystack reference and says
+  Studio TROV will confirm it in the Paystack dashboard
+  before fulfilling. Payment is NOT verified automatically.
+  Cart is saved in localStorage on the same device only.
 
 ## Facts used (exact, from the line sheet)
 
@@ -58,9 +77,23 @@ fonts in `fonts/`).
   blind / white-label dropshipping; fulfilled from New York via
   Creativehub. Contact: thestudiotrov@gmail.com.
 
-## Placeholders / not live yet
+## Paystack (card payments — NOT live yet)
 
-- Stripe is NOT connected — payment is simulated, no money moves.
+Card payment is built in but switched off: `PAYSTACK_PUBLIC_KEY`
+in `app.js` is empty, so the Paystack button shows "coming soon,
+add public key", is disabled, and no payment is attempted.
+To switch it on, Flamez needs to:
+1. Create / sign in to Paystack (paystack.com).
+2. Copy the **public** key from Settings → API Keys & Webhooks.
+3. Tell Oscar — Oscar pastes it into `PAYSTACK_PUBLIC_KEY` in
+   `app.js` and redeploys. Never share a Paystack **secret** key.
+
+## Notes
+
+- Payment is by bank transfer on invoice, or by card via
+  Paystack (once switched on). There is no automatic payment
+  verification — Studio TROV checks the bank transfer, or the
+  card payment in the Paystack dashboard, before fulfilling.
 - The order is NOT sent automatically — the buyer sends it by email
   (mailto button) or copies the summary.
 - No account/login, no stock control, no tax calculation.
